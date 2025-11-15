@@ -613,6 +613,28 @@
 					<label for="sideNavShowCollectionLinks">Show Links to Collections</label>
 				</div>
 				<fieldset>
+					<label for="sideNavWidth">Sidebar Width (px)</label>
+					<input
+						type="number"
+						placeholder="Sidebar Width"
+						id="sideNavWidth"
+						min="30"
+						max="100"
+						step="1"
+						bind:value={settings.sideNav.width} />
+				</fieldset>
+				<fieldset>
+					<label for="sideNavPadding">Sidebar Padding (px)</label>
+					<input
+						type="number"
+						placeholder="Sidebar Padding"
+						id="sideNavPadding"
+						min="0"
+						max="20"
+						step="1"
+						bind:value={settings.sideNav.padding} />
+				</fieldset>
+				<fieldset>
 					<label for="sideNavFont">Font</label>
 					<select id="sideNavFont" bind:value={settings.sideNav.font}>
 						{#each fonts as font (font.name)}
@@ -805,7 +827,13 @@
 <main
 	style:--doc-width="{702}px"
 	style:--doc-height="{702 * (1 / (settings.design.aspectRatio || 1))}px"
-	style:--sidenav-width="{settings.sideNav.disable ? 0 : settings.sideNav.width}px"
+	style:--sidenav-width="{settings.sideNav.disable
+		? 0
+		: settings.sideNav.width + settings.sideNav.padding}px"
+	style:--sidenav-padding="{settings.sideNav.disable ? 0 : settings.sideNav.padding}px"
+	style:--sidenav-content-width="{settings.sideNav.disable
+		? 0
+		: settings.sideNav.width}px"
 	style:--topnav-height="{settings.topNav.disable ? 0 : settings.topNav.height}px"
 	style:--font="'{font.name}'"
 	style:--font-size="{font.size}rem"

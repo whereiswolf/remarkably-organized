@@ -153,6 +153,7 @@ export class PlannerSettings {
 		disable = $state(false);
 		showCollectionLinks = $state(true);
 		width = $state(52);
+		padding = $state(0);
 		leftSide = $state(true);
 		font = $state('Bebas Neue');
 	})();
@@ -507,6 +508,7 @@ export class PlannerSettings {
 				disable: this.sideNav.disable,
 				showCollectionLinks: this.sideNav.showCollectionLinks,
 				width: this.sideNav.width,
+				padding: this.sideNav.padding,
 				leftSide: this.sideNav.leftSide,
 				font: this.sideNav.font,
 			},
@@ -603,6 +605,8 @@ export class PlannerSettings {
 		if (state?.sideNav?.showCollectionLinks !== undefined)
 			this.sideNav.showCollectionLinks = state.sideNav.showCollectionLinks;
 		if (state?.sideNav?.width !== undefined) this.sideNav.width = state.sideNav.width;
+		if (state?.sideNav?.padding !== undefined)
+			this.sideNav.padding = state.sideNav.padding;
 		if (state?.sideNav?.leftSide !== undefined)
 			this.sideNav.leftSide = state.sideNav.leftSide;
 		if (state?.sideNav?.font !== undefined) this.sideNav.font = state.sideNav.font;
