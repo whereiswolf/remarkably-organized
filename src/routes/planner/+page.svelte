@@ -4,6 +4,12 @@
 	import { slide } from 'svelte/transition';
 	import SettingsIcon from '~icons/fa/cog';
 	import LoadingIcon from '~icons/eos-icons/bubble-loading';
+	import CalendarIcon from '~icons/material-symbols-light/calendar-month';
+	import FileIcon from '~icons/material-symbols-light/description';
+	import PaintBrushIcon from '~icons/material-symbols-light/palette';
+	import BarsIcon from '~icons/material-symbols-light/menu';
+	import BookIcon from '~icons/material-symbols-light/collections-bookmark';
+	import ClockIcon from '~icons/material-symbols-light/schedule';
 	import CoverPage from './CoverPage.svelte';
 	import MonthPage from './MonthPage.svelte';
 	import YearPage from './YearPage.svelte';
@@ -89,7 +95,9 @@
 
 	let customTimeframe = $state(false);
 	let showHelp = $state(page.url.searchParams.get('help') !== '0');
-	let showAdvancedSettings = $state(false);
+	let activeTab = $state<
+		'general' | 'pages' | 'design' | 'navigation' | 'collections' | 'calendars'
+	>('general');
 	let enableHighResolution = $state(page.url.searchParams.has('highres'));
 	let loadPages = $state(
 		page.url.searchParams.get('help') === '0' &&
@@ -210,66 +218,112 @@
 
 <div class="menu">
 	<h2>Settings</h2>
+	<nav class="tabs">
+		<button
+			type="button"
+			class:active={activeTab === 'general'}
+			onclick={() => (activeTab = 'general')}>
+			<CalendarIcon />
+			<span>General</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'pages'}
+			onclick={() => (activeTab = 'pages')}>
+			<FileIcon />
+			<span>Pages</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'design'}
+			onclick={() => (activeTab = 'design')}>
+			<PaintBrushIcon />
+			<span>Design</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'navigation'}
+			onclick={() => (activeTab = 'navigation')}>
+			<BarsIcon />
+			<span>Navigation</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'collections'}
+			onclick={() => (activeTab = 'collections')}>
+			<BookIcon />
+			<span>Collections</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'calendars'}
+			onclick={() => (activeTab = 'calendars')}>
+			<ClockIcon />
+			<span>Events</span>
+		</button>
+	</nav>
 	<form>
-		<fieldset>
-			<label for="timeframeBasedOnYear">Year</label>
-			<select
-				id="timeframeBasedOnYear"
-				value={settings.date.start.getUTCMonth() === 0 &&
-				settings.date.start.getUTCDate() === 1 &&
-				settings.date.end.getUTCMonth() === 11 &&
-				settings.date.end.getUTCDate() === 31 &&
-				!customTimeframe
-					? settings.date.start.getTime()
-					: 0}
-				onchange={onTimeframeSelection}>
-				{#each new Array(7) as _, i (i)}
-					{@const date = new Date(Date.UTC(new Date().getFullYear() - 1 + i))}
-					<option value={date.getTime()}>
-						{date.getUTCFullYear()}
-					</option>
-				{/each}
-				<option value={0}>Custom Date Range</option>
-			</select>
-		</fieldset>
-		{#if customTimeframe || settings.date.start.getUTCMonth() !== 0 || settings.date.start.getUTCDate() !== 1 || settings.date.end.getUTCMonth() !== 11 || settings.date.end.getUTCDate() !== 31}
+		{#if activeTab === 'general'}
 			<fieldset>
-				<label for="start">Start Date</label>
-				<input
-					type="date"
-					placeholder="Start Date"
-					id="start"
-					max={settings.date.end.toISOString().slice(0, 10)}
-					value={settings.date.start.toISOString().slice(0, 10)}
-					onchange={onStartDateChange} />
+				<label for="timeframeBasedOnYear">Year</label>
+				<select
+					id="timeframeBasedOnYear"
+					value={settings.date.start.getUTCMonth() === 0 &&
+					settings.date.start.getUTCDate() === 1 &&
+					settings.date.end.getUTCMonth() === 11 &&
+					settings.date.end.getUTCDate() === 31 &&
+					!customTimeframe
+						? settings.date.start.getTime()
+						: 0}
+					onchange={onTimeframeSelection}>
+					{#each new Array(7) as _, i (i)}
+						{@const date = new Date(Date.UTC(new Date().getFullYear() - 1 + i))}
+						<option value={date.getTime()}>
+							{date.getUTCFullYear()}
+						</option>
+					{/each}
+					<option value={0}>Custom Date Range</option>
+				</select>
 			</fieldset>
-			<fieldset>
-				<label for="end">End Date</label>
+			{#if customTimeframe || settings.date.start.getUTCMonth() !== 0 || settings.date.start.getUTCDate() !== 1 || settings.date.end.getUTCMonth() !== 11 || settings.date.end.getUTCDate() !== 31}
+				<fieldset>
+					<label for="start">Start Date</label>
+					<input
+						type="date"
+						placeholder="Start Date"
+						id="start"
+						max={settings.date.end.toISOString().slice(0, 10)}
+						value={settings.date.start.toISOString().slice(0, 10)}
+						onchange={onStartDateChange} />
+				</fieldset>
+				<fieldset>
+					<label for="end">End Date</label>
+					<input
+						type="date"
+						placeholder="End Date"
+						id="end"
+						min={settings.date.start.toISOString().slice(0, 10)}
+						value={settings.date.end.toISOString().slice(0, 10)}
+						onchange={onEndDateChange} />
+				</fieldset>
+			{/if}
+			<div class="checkbox">
 				<input
-					type="date"
-					placeholder="End Date"
-					id="end"
-					min={settings.date.start.toISOString().slice(0, 10)}
-					value={settings.date.end.toISOString().slice(0, 10)}
-					onchange={onEndDateChange} />
-			</fieldset>
+					type="checkbox"
+					bind:checked={settings.date.startWeekOnSunday}
+					id="startWeekOnSunday" />
+				<label for="startWeekOnSunday">Start Week on Sunday</label>
+			</div>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={enableHighResolution}
+					id="enableHighResolution" />
+				<label for="enableHighResolution">Print in high resolution (bigger file)</label>
+			</div>
 		{/if}
-		<div class="checkbox">
-			<input
-				type="checkbox"
-				bind:checked={settings.date.startWeekOnSunday}
-				id="startWeekOnSunday" />
-			<label for="startWeekOnSunday">Start Week on Sunday</label>
-		</div>
-		<div class="checkbox">
-			<input
-				type="checkbox"
-				bind:checked={enableHighResolution}
-				id="enableHighResolution" />
-			<label for="enableHighResolution">Print in high resolution (bigger file)</label>
-		</div>
 
-		{#if showAdvancedSettings}
+		{#if activeTab === 'pages'}
 			<h3>Cover Page</h3>
 			<div class="checkbox">
 				<input
@@ -554,7 +608,9 @@
 					</select>
 				</fieldset>
 			{/if}
+		{/if}
 
+		{#if activeTab === 'design'}
 			<h3>Design</h3>
 			<fieldset>
 				<label for="designFont">Font</label>
@@ -588,7 +644,9 @@
 					id="start"
 					bind:value={settings.design.colorDots} />
 			</fieldset>
+		{/if}
 
+		{#if activeTab === 'navigation'}
 			<h3>Sidebar Navigation</h3>
 			<div class="checkbox">
 				<input
@@ -669,7 +727,9 @@
 					</select>
 				</fieldset>
 			{/if}
+		{/if}
 
+		{#if activeTab === 'collections'}
 			<h3>Collections</h3>
 			<div class="collections">
 				{#each settings.collections as collection, i (collection.id)}
@@ -756,7 +816,9 @@
 					Add New Collection
 				</button>
 			</div>
+		{/if}
 
+		{#if activeTab === 'calendars'}
 			<h3>Calendar Events</h3>
 			{#each settings.calendars as calendar, i (calendar.url)}
 				<h4 style="margin-top: 1rem;">
@@ -805,13 +867,6 @@
 						url: '',
 					})}>
 				Add New Calendar
-			</button>
-		{:else}
-			<button
-				type="button"
-				style="margin: 1rem 0;"
-				onclick={() => (showAdvancedSettings = true)}>
-				Advanced Settings
 			</button>
 		{/if}
 	</form>
@@ -951,15 +1006,57 @@
 			background-color: var(--bg);
 			padding: 2rem 0 1rem;
 			color: var(--text);
-			z-index: 2;
+			z-index: 3;
+			margin: 0;
 		}
-		h3 {
+		nav.tabs {
 			position: sticky;
 			top: 4.5rem;
 			background-color: var(--bg);
+			z-index: 2;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 0.5rem;
+			padding: 0.5rem 0 1rem;
+			border-bottom: 1px solid var(--outline);
+			margin-bottom: 1rem;
+
+			button {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.5rem;
+				background: transparent;
+				border: 1px solid var(--outline);
+				border-radius: var(--radius-3);
+				color: var(--text);
+				font-size: 0.75rem;
+				cursor: pointer;
+				transition: all 0.2s;
+
+				&:hover {
+					background-color: var(--surface-2);
+					border-color: var(--text-low);
+				}
+
+				&.active {
+					background-color: var(--action);
+					color: var(--action-text);
+					border-color: var(--action);
+				}
+
+				:global(svg) {
+					font-size: 1.25rem;
+				}
+			}
+		}
+		h3 {
+			position: sticky;
+			top: 10rem;
+			background-color: var(--bg);
 			color: var(--text);
 			padding: 1rem 0;
-			margin-top: 1rem;
 			margin-bottom: -1rem;
 			z-index: 1;
 		}
