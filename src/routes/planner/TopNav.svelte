@@ -151,9 +151,12 @@
 										? 'long'
 										: 'short',
 							})}
-					{/if}
-					{#if !showDayBreadcrumb}{t('week', settings.date.locale)}{:else}{t('weekShort', settings.date.locale)}{/if}
-					{settings.weekPage.useWeekSinceYear
+						{/if}
+						{#if !showDayBreadcrumb}{t('week', settings.date.locale)}{:else}{t(
+								'weekShort',
+								settings.date.locale,
+							)}{/if}
+						{settings.weekPage.useWeekSinceYear
 							? timeframe.weekSinceYear
 							: timeframe.weekSinceMonth}
 					</a>
@@ -173,7 +176,7 @@
 						{@html formatToString(timeframe.daySinceMonth, {
 							type: 'ordinal',
 							html: true,
-				locale: settings.date.locale,
+							locale: settings.date.locale,
 						})}
 					</a>
 				</li>

@@ -33,7 +33,7 @@ const translations: Record<string, Record<TranslationKey, string>> = {
 	// Polish
 	pl: {
 		week: 'Tydzień',
-		weekShort: 'TYG',
+		weekShort: 'TYDZ',
 		notes: 'Notatki',
 		quarter: 'Kwartał',
 		page: 'Strona',
@@ -62,7 +62,9 @@ export function t(key: TranslationKey, locale: string = 'en-US'): string {
  * Get translation object for a locale
  * Useful for components that need multiple translations
  */
-export function getTranslations(locale: string = 'en-US'): Record<TranslationKey, string> {
+export function getTranslations(
+	locale: string = 'en-US',
+): Record<TranslationKey, string> {
 	const lang = locale.split('-')[0].toLowerCase();
 	return translations[lang] ?? translations['en'];
 }

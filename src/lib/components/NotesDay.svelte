@@ -15,6 +15,13 @@
 </script>
 
 <div class="day">
+	<div class="checkboxes">
+		{#each new Array(20) as _, i (i)}
+			<div class="checkbox-row">
+				<input type="checkbox" aria-label="Task checkbox" />
+			</div>
+		{/each}
+	</div>
 	<div class="hours">
 		{#each new Array(17) as _, i (i)}
 			{@const hour = i + 7}
@@ -53,12 +60,38 @@
 			vertical-align: super;
 		}
 	}
+	.checkboxes {
+		position: absolute;
+		top: 8px;
+		left: 30px;
+		bottom: 0;
+		width: 40%;
+		max-width: 200px;
+		display: flex;
+		flex-direction: column;
+		z-index: 2;
+
+		.checkbox-row {
+			display: flex;
+			align-items: center;
+			height: 24px;
+
+			input[type='checkbox'] {
+				margin: 0;
+				transform: scale(1.2);
+				cursor: pointer;
+				background-color: white;
+				border: 1px solid var(--outline);
+			}
+		}
+	}
 	.grid {
 		position: absolute;
 		top: 0.5rem;
 		left: 0;
 		right: 0;
 		bottom: 0;
+		z-index: 0;
 	}
 	.hours {
 		position: absolute;
@@ -68,6 +101,8 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		align-items: start;
+
 		color: var(--text-low);
 		.hour {
 			display: flex;

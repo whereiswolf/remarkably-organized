@@ -127,7 +127,7 @@ export class PlannerSettings {
 	/** Settings for changing the overall design of the planner */
 	readonly design = new (class DesignSettings {
 		aspectRatio = $state(0.75);
-		width = $state(702);
+		width = $state(720);
 		font = $state('Roboto');
 		fontDisplay = $state('Bebas Neue');
 		colorText = $state('#424242');
@@ -153,7 +153,7 @@ export class PlannerSettings {
 	readonly sideNav = new (class SideNavSettings {
 		disable = $state(false);
 		showCollectionLinks = $state(true);
-		width = $state(52);
+		width = $state(50);
 		padding = $state(0);
 		leftSide = $state(true);
 		font = $state('Bebas Neue');
