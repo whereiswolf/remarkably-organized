@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatToString, PlannerSettings, type Timeframe } from '$lib';
+	import { t } from '$lib/helpers/translations';
 	import HomeIcon from '~icons/material-symbols-light/home-rounded';
 	import { getFontInfo } from '../fonts/fonts';
 
@@ -117,7 +118,7 @@
 				<li>
 					<a href="#{year}-q{quarter}">
 						{!showWeekBreadcrumb && !showMonthBreadcrumb && !showDayBreadcrumb
-							? 'Quarter '
+							? t('quarter', settings.date.locale) + ' '
 							: 'Q'}{quarter}
 					</a>
 				</li>
@@ -150,9 +151,9 @@
 										? 'long'
 										: 'short',
 							})}
-						{/if}
-						{#if !showDayBreadcrumb}Week{:else}WK{/if}
-						{settings.weekPage.useWeekSinceYear
+					{/if}
+					{#if !showDayBreadcrumb}{t('week', settings.date.locale)}{:else}{t('weekShort', settings.date.locale)}{/if}
+					{settings.weekPage.useWeekSinceYear
 							? timeframe.weekSinceYear
 							: timeframe.weekSinceMonth}
 					</a>
@@ -172,6 +173,7 @@
 						{@html formatToString(timeframe.daySinceMonth, {
 							type: 'ordinal',
 							html: true,
+				locale: settings.date.locale,
 						})}
 					</a>
 				</li>

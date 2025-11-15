@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { intersect, type Month, type PlannerSettings } from '$lib';
+	import { intersect, type Month, type PlannerSettings, t } from '$lib';
 	import Page from '$lib/components/Page.svelte';
 	import SideNav from './SideNav.svelte';
 	import TopNav from './TopNav.svelte';
@@ -22,7 +22,7 @@
 			<TopNav
 				{settings}
 				timeframe={month}
-				breadcrumbs={[{ href: `#${month.id}-pg${i + 2}`, name: `Page ${i + 2}` }]} />
+				breadcrumbs={[{ href: `#${month.id}-pg${i + 2}`, name: `${t('page', settings.date.locale)} ${i + 2}` }]} />
 			<Page display={settings.monthPage.notePagesTemplate} {settings} timeframe={month} />
 		</article>
 	{/each}

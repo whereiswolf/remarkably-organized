@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type CalendarEvent, type Timeframe, getWeek } from '$lib';
+	import { t } from '$lib/helpers/translations';
 	import Grid from './Grid.svelte';
 
 	let {
@@ -31,7 +32,7 @@
 							month: 'short',
 						})}
 					{/if}
-					Week {useWeekSinceYear ? week.weekSinceYear : week.weekSinceMonth}
+					{t('week', locale)} {useWeekSinceYear ? week.weekSinceYear : week.weekSinceMonth}
 				</a>
 			{/each}
 		{/if}
@@ -80,7 +81,7 @@
 	</div>
 	{#if showNotes}
 		<div class="notes">
-			<h3>Notes</h3>
+			<h3>{t('notes', locale)}</h3>
 			<Grid display="dotted" />
 		</div>
 	{/if}

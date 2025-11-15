@@ -1,15 +1,31 @@
 <script lang="ts">
 	import Grid from './Grid.svelte';
+
+	let { locale = 'en-US' } = $props();
+
+	// Determine if locale uses 24-hour format
+	const uses24Hour = $derived.by(() => {
+		const lang = locale.split('-')[0].toLowerCase();
+		// Most European languages use 24-hour format, except UK and Ireland
+		return (
+			!['en', 'es', 'fil', 'hi'].includes(lang) ||
+			locale.toLowerCase().startsWith('en-gb')
+		);
+	});
 </script>
 
 <div class="day">
 	<div class="hours">
 		{#each new Array(17) as _, i (i)}
-			{@const hour = i + 5}
+			{@const hour = i + 7}
 			<div class="hour">
 				<span>
-					{hour % 12 === 0 ? 12 : hour % 12}
-					<small>{hour < 12 ? 'AM' : 'PM'}</small>
+					{#if uses24Hour}
+						{hour}
+					{:else}
+						{hour % 12 === 0 ? 12 : hour % 12}
+						<small>{hour < 12 ? 'AM' : 'PM'}</small>
+					{/if}
 				</span>
 			</div>
 		{/each}

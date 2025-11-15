@@ -10,6 +10,13 @@
 	const weekStart = $derived(
 		new Date(getFirstDayOfWeek(timeframe.start, startWeekOnSunday)),
 	);
+
+	// Determine if locale uses 24-hour format
+	const uses24Hour = $derived.by(() => {
+		const lang = locale.split('-')[0].toLowerCase();
+		// Most European languages use 24-hour format, except UK and Ireland
+		return !['en', 'es', 'fil', 'hi'].includes(lang) || locale.toLowerCase().startsWith('en-gb');
+	});
 </script>
 
 <div class="week">
@@ -17,8 +24,12 @@
 	{#each new Array(24) as _, i (i)}
 		<div class="hour-label">
 			{#if i > 0}
-				{i === 12 ? 12 : i % 12}
-				<small>{i < 12 ? 'AM' : 'PM'}</small>
+				{#if uses24Hour}
+					{i}
+				{:else}
+					{i === 12 ? 12 : i % 12}
+					<small>{i < 12 ? 'AM' : 'PM'}</small>
+				{/if}
 			{/if}
 		</div>
 	{/each}
@@ -29,7 +40,7 @@
 				class="day"
 				href="#{date.getUTCFullYear()}-{date.getUTCMonth() + 1}-{date.getUTCDate()}">
 				{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
-				{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}
+				{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true, locale })}
 			</a>
 		{:else}
 			<div class="day">

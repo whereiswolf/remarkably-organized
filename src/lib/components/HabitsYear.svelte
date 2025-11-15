@@ -51,7 +51,7 @@
 				class:last-col={day % 14 === 13}
 				class:second-week={day % 14 === 7}>
 				<div class="date">
-					{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}
+					{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true, locale })}
 				</div>
 				<div class="month">
 					{date.toLocaleString(locale, { month: 'short', timeZone: 'UTC' })}

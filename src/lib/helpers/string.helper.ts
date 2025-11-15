@@ -109,6 +109,11 @@ type StringFormatOptions =
 			 * @example <span class="value">1</span><span class="ordinal">st</span>
 			 */
 			html?: boolean;
+
+			/**
+			 * Locale for formatting ordinals (e.g., 'en-US', 'pl-PL')
+			 */
+			locale?: string;
 	  };
 
 /** Formats the given value into a string with special meaning (depending on options.type) */
@@ -262,6 +267,17 @@ export function formatToString(
 
 	// Format the number as a number that represents an order
 	if (options?.type === 'ordinal') {
+		const number = +(val || 0);
+		const locale = options.locale || 'en-US';
+		const lang = locale.split('-')[0].toLowerCase();
+
+		// For Polish and other languages that use simple dot notation for ordinals
+		if (lang === 'pl' || lang === 'cs' || lang === 'sk' || lang === 'hu') {
+			if (!options?.html) return `${number}.`;
+			return `<span class="value">${number}</span><span class="ordinal">.</span>`;
+		}
+
+		// For English, use traditional st, nd, rd, th suffixes
 		const enOrdinalRules = new Intl.PluralRules('en-US', { type: 'ordinal' });
 		const suffixes = new Map([
 			['one', 'st'],
@@ -269,7 +285,6 @@ export function formatToString(
 			['few', 'rd'],
 			['other', 'th'],
 		]);
-		const number = +(val || 0);
 		const rule = enOrdinalRules.select(number);
 		const suffix = suffixes.get(rule);
 		if (!options?.html) return `${number}${suffix}`;

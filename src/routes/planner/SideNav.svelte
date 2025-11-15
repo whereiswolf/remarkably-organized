@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PlannerSettings, type Timeframe } from '$lib';
+	import { PlannerSettings, type Timeframe, t } from '$lib';
 	import { getFontInfo } from '../fonts/fonts';
 
 	let {
@@ -166,10 +166,10 @@
 									class:highlight-start={highlightStart && !highlightEnd}
 									class:highlight-middle={highlightStart && highlightEnd}
 									class:highlight-end={highlightEnd && !highlightStart}>
-									<small>
-										{settings.weekPage.useWeekNumbersInSideNav
-											? 'WK'
-											: week.start.toLocaleString(settings.date.locale, {
+								<small>
+									{settings.weekPage.useWeekNumbersInSideNav
+										? t('weekShort', settings.date.locale)
+										: week.start.toLocaleString(settings.date.locale, {
 													month: 'short',
 													timeZone: 'UTC',
 												})}

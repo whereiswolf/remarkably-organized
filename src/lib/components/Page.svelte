@@ -53,6 +53,7 @@
 		<CalendarYear
 			months={settings.months.filter((m) => m.year === timeframe.year)}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
+			locale={settings.date.locale}
 			{settings} />
 	{:else if display === 'calendar-quarter'}
 		<CalendarQuarter
@@ -60,6 +61,7 @@
 				(m) => m.year === timeframe.year && m.quarter === timeframe.quarter,
 			)}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
+			locale={settings.date.locale}
 			{settings} />
 	{:else if display === 'agenda-week'}
 		<AgendaWeek
@@ -67,7 +69,7 @@
 			startWeekOnSunday={settings.date.startWeekOnSunday}
 			locale={settings.date.locale} />
 	{:else if display === 'agenda-day'}
-		<AgendaDay />
+		<AgendaDay locale={settings.date.locale} />
 	{:else if display === 'notes-quarter'}
 		<NotesQuarter
 			months={settings.months.filter(
@@ -102,7 +104,7 @@
 			display="rows"
 			locale={settings.date.locale} />
 	{:else if display === 'notes-day'}
-		<NotesDay />
+		<NotesDay locale={settings.date.locale} />
 	{:else if display === 'habit-year-by-week'}
 		<HabitsYear
 			{timeframe}
