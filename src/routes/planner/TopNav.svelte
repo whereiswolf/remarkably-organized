@@ -125,7 +125,7 @@
 			{#if showMonthBreadcrumb}
 				<li>
 					<a href="#{year}-{month}">
-						{new Date(year, month - 1).toLocaleString('default', {
+						{new Date(year, month - 1).toLocaleString(settings.date.locale, {
 							month: !showWeekBreadcrumb && !showDayBreadcrumb ? 'long' : 'short',
 						})}
 					</a>
@@ -142,7 +142,7 @@
 							{new Date(
 								timeframe.weekYear || timeframe.year!,
 								(timeframe.weekMonth || timeframe.month!) - 1,
-							).toLocaleString('default', {
+							).toLocaleString(settings.date.locale, {
 								month:
 									!showDayBreadcrumb &&
 									(!timeframe.weekMonth || timeframe.weekMonth === timeframe.month) &&
@@ -161,11 +161,11 @@
 			{#if showDayBreadcrumb}
 				<li>
 					<a href="#{timeframe.year}-{timeframe.month}-{timeframe.daySinceMonth}">
-						{timeframe.start.toLocaleString('default', {
+						{timeframe.start.toLocaleString(settings.date.locale, {
 							weekday: 'short',
 							timeZone: 'UTC',
 						})},
-						{timeframe.start.toLocaleString('default', {
+						{timeframe.start.toLocaleString(settings.date.locale, {
 							month: !breadcrumbs.length ? 'long' : 'short',
 							timeZone: 'UTC',
 						})}

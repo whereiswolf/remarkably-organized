@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { formatToString, getFirstDayOfWeek, type Timeframe } from '$lib';
 
-	let { timeframe = {} as Timeframe, startWeekOnSunday = false } = $props();
+	let {
+		timeframe = {} as Timeframe,
+		startWeekOnSunday = false,
+		locale = 'en-US',
+	} = $props();
 
 	const weekStart = $derived(
 		new Date(getFirstDayOfWeek(timeframe.start, startWeekOnSunday)),
@@ -24,12 +28,12 @@
 			<a
 				class="day"
 				href="#{date.getUTCFullYear()}-{date.getUTCMonth() + 1}-{date.getUTCDate()}">
-				{date.toLocaleString('default', { weekday: 'short', timeZone: 'UTC' })}
+				{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
 				{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}
 			</a>
 		{:else}
 			<div class="day">
-				{date.toLocaleString('default', { weekday: 'short', timeZone: 'UTC' })}
+				{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
 			</div>
 		{/if}
 		{#each new Array(24) as _, i (i)}

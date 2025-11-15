@@ -56,6 +56,37 @@
 		{ name: 'Habit Checkboxes - Grouped by Month', value: 'habit-year-by-month' },
 	];
 
+	const locales = [
+		{
+			name: 'Auto-detect',
+			value: typeof navigator !== 'undefined' ? navigator.language : 'en-US',
+		},
+		{ name: 'English (US)', value: 'en-US' },
+		{ name: 'English (UK)', value: 'en-GB' },
+		{ name: 'Spanish', value: 'es' },
+		{ name: 'French', value: 'fr' },
+		{ name: 'German', value: 'de' },
+		{ name: 'Italian', value: 'it' },
+		{ name: 'Portuguese', value: 'pt' },
+		{ name: 'Portuguese (Brazil)', value: 'pt-BR' },
+		{ name: 'Dutch', value: 'nl' },
+		{ name: 'Polish', value: 'pl' },
+		{ name: 'Russian', value: 'ru' },
+		{ name: 'Japanese', value: 'ja' },
+		{ name: 'Chinese (Simplified)', value: 'zh-CN' },
+		{ name: 'Chinese (Traditional)', value: 'zh-TW' },
+		{ name: 'Korean', value: 'ko' },
+		{ name: 'Arabic', value: 'ar' },
+		{ name: 'Hindi', value: 'hi' },
+		{ name: 'Swedish', value: 'sv' },
+		{ name: 'Norwegian', value: 'no' },
+		{ name: 'Danish', value: 'da' },
+		{ name: 'Finnish', value: 'fi' },
+		{ name: 'Greek', value: 'el' },
+		{ name: 'Turkish', value: 'tr' },
+		{ name: 'Hebrew', value: 'he' },
+	];
+
 	const font = $derived(fonts.find((f) => f.name === settings.design.font) ?? fonts[0]);
 	const googleFontURL = $derived(
 		getGoogleFontURL([
@@ -314,6 +345,14 @@
 					id="startWeekOnSunday" />
 				<label for="startWeekOnSunday">Start Week on Sunday</label>
 			</div>
+			<fieldset>
+				<label for="locale">Language/Locale</label>
+				<select id="locale" bind:value={settings.date.locale}>
+					{#each locales as locale, i (i)}
+						<option value={locale.value}>{locale.name}</option>
+					{/each}
+				</select>
+			</fieldset>
 			<div class="checkbox">
 				<input
 					type="checkbox"

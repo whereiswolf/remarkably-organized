@@ -62,7 +62,10 @@
 			startWeekOnSunday={settings.date.startWeekOnSunday}
 			{settings} />
 	{:else if display === 'agenda-week'}
-		<AgendaWeek {timeframe} startWeekOnSunday={settings.date.startWeekOnSunday} />
+		<AgendaWeek
+			{timeframe}
+			startWeekOnSunday={settings.date.startWeekOnSunday}
+			locale={settings.date.locale} />
 	{:else if display === 'agenda-day'}
 		<AgendaDay />
 	{:else if display === 'notes-quarter'}
@@ -78,34 +81,40 @@
 			startWeekOnSunday={settings.date.startWeekOnSunday}
 			showWeekLinks={!settings.weekPage.disable}
 			useWeekSinceYear={settings.weekPage.useWeekSinceYear}
-			showNotes={display === 'calendar-month-with-notes'} />
+			showNotes={display === 'calendar-month-with-notes'}
+			locale={settings.date.locale} />
 	{:else if display === 'notes-week'}
 		<NotesWeek
 			{timeframe}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
-			display="grid" />
+			display="grid"
+			locale={settings.date.locale} />
 	{:else if display === 'notes-week-columns'}
 		<NotesWeek
 			{timeframe}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
-			display="columns" />
+			display="columns"
+			locale={settings.date.locale} />
 	{:else if display === 'notes-week-rows'}
 		<NotesWeek
 			{timeframe}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
-			display="rows" />
+			display="rows"
+			locale={settings.date.locale} />
 	{:else if display === 'notes-day'}
 		<NotesDay />
 	{:else if display === 'habit-year-by-week'}
 		<HabitsYear
 			{timeframe}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
-			groupBy="week" />
+			groupBy="week"
+			locale={settings.date.locale} />
 	{:else if display === 'habit-year-by-month'}
 		<HabitsYear
 			{timeframe}
 			startWeekOnSunday={settings.date.startWeekOnSunday}
-			groupBy="month" />
+			groupBy="month"
+			locale={settings.date.locale} />
 	{:else if display.startsWith('lined')}
 		<Grid {display} columns={cols} lines={numLines} {aspectRatio} />
 	{:else if display.startsWith('numbered')}
