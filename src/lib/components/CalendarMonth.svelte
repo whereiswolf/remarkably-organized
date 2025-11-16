@@ -128,7 +128,7 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: start;
-			font-size: 1.05em;
+			font-size: 1.2em;
 			font-weight: var(--font-weight-light);
 			border-left: solid 1px var(--outline);
 			line-height: 1;
@@ -136,7 +136,7 @@
 				border-top: solid 1px var(--outline);
 			}
 			small {
-				font-size: 0.65em;
+				font-size: 0.7em;
 				opacity: 1;
 				color: currentColor;
 				margin: 0.1rem 0.2rem 0 0;

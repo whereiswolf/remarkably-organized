@@ -166,10 +166,10 @@
 									class:highlight-start={highlightStart && !highlightEnd}
 									class:highlight-middle={highlightStart && highlightEnd}
 									class:highlight-end={highlightEnd && !highlightStart}>
-								<small>
-									{settings.weekPage.useWeekNumbersInSideNav
-										? t('weekShort', settings.date.locale)
-										: week.start.toLocaleString(settings.date.locale, {
+									<small>
+										{settings.weekPage.useWeekNumbersInSideNav
+											? t('weekShort', settings.date.locale)
+											: week.start.toLocaleString(settings.date.locale, {
 													month: 'short',
 													timeZone: 'UTC',
 												})}
@@ -266,6 +266,7 @@
 		padding: 0;
 		width: 100%;
 		margin: 0;
+		padding-bottom: 50px;
 	}
 	ol.tabs > li {
 		padding: 0;
