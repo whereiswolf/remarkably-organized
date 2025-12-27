@@ -25,7 +25,13 @@
 		display.endsWith('large') ? 'large' : display.endsWith('small') ? 'small' : 'medium',
 	);
 	const cols = $derived(
-		type === 'lined' ? columns ?? 1 : size === 'small' ? 30 : size === 'medium' ? 25 : 20,
+		type === 'lined'
+			? (columns ?? 1)
+			: size === 'small'
+				? 30
+				: size === 'medium'
+					? 25
+					: 20,
 	);
 	const numLines = $derived(
 		lines ?? (size === 'small' ? 40 : size === 'medium' ? 35 : 30),
@@ -147,6 +153,7 @@
 		display: grid;
 		grid-template-columns: repeat(var(--cols), 1fr);
 		padding: 0 calc(100% / var(--cols));
+		opacity: 0.5;
 		--line-size: 1px;
 		--minor-line-size: 1px;
 		--major-line-size: 1px;

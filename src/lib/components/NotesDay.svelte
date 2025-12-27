@@ -16,15 +16,15 @@
 
 <div class="day">
 	<div class="checkboxes">
-		{#each new Array(14) as _, i (i)}
+		{#each new Array(22) as _, i (i)}
 			<div class="checkbox-row">
 				<input type="checkbox" aria-label="Task checkbox" />
 			</div>
 		{/each}
 	</div>
 	<div class="hours">
-		{#each new Array(17) as _, i (i)}
-			{@const hour = i + 7}
+		{#each new Array(11) as _, i (i)}
+			{@const hour = i + 8}
 			<div class="hour">
 				<span>
 					{#if uses24Hour}
@@ -38,7 +38,7 @@
 		{/each}
 	</div>
 	<div class="grid">
-		<Grid display="dotted" />
+		<Grid display="grid-small" />
 	</div>
 </div>
 
@@ -62,8 +62,8 @@
 	}
 	.checkboxes {
 		position: absolute;
-		top: -2px;
-		left: 31px;
+		top: -1px;
+		left: 27px;
 		bottom: 0;
 		display: flex;
 		flex-direction: column;
@@ -71,10 +71,8 @@
 
 		&::before {
 			content: '';
-			background: white;
 			width: 50px;
 			position: absolute;
-			top: 0;
 			left: -25px;
 			bottom: 225px;
 			z-index: -1;
@@ -83,7 +81,7 @@
 		.checkbox-row {
 			display: flex;
 			align-items: center;
-			height: 48px;
+			height: 40.75px;
 
 			input[type='checkbox'] {
 				margin: 0;
@@ -104,8 +102,8 @@
 	}
 	.hours {
 		position: absolute;
-		top: 41px;
-		right: 0;
+		top: -8px;
+		right: -2px;
 		bottom: 0;
 		height: 100%;
 		display: flex;
@@ -117,9 +115,8 @@
 			display: flex;
 			justify-content: center;
 			align-items: start;
-			height: 48px;
+			height: 100px;
 			span {
-				background-color: white;
 				padding: 0.5rem;
 				font-size: 0.7em;
 				z-index: 1;
