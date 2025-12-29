@@ -15,8 +15,8 @@
 			| 'quarters'
 			| 'years'
 			| 'none',
-		numWeeksInSideNav = 15,
-		numDaysInSideNav = 15,
+		numWeeksInSideNav = 14,
+		numDaysInSideNav = 14,
 		disableActiveIndicator = false,
 	} = $props();
 
@@ -266,7 +266,9 @@
 		padding: 0;
 		width: 100%;
 		margin: 0;
-		padding-bottom: 50px;
+		&:last-child {
+			padding-bottom: 50px;
+		}
 	}
 	ol.tabs > li {
 		padding: 0;

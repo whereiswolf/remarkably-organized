@@ -16,7 +16,7 @@
 
 <div class="day">
 	<div class="checkboxes">
-		{#each new Array(22) as _, i (i)}
+		{#each new Array(21) as _, i (i)}
 			<div class="checkbox-row">
 				<input type="checkbox" aria-label="Task checkbox" />
 			</div>
@@ -115,7 +115,7 @@
 			display: flex;
 			justify-content: center;
 			align-items: start;
-			height: 100px;
+			margin-bottom: 3.49em;
 			span {
 				padding: 0.5rem;
 				font-size: 0.7em;
