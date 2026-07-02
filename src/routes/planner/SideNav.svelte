@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PlannerSettings, type Timeframe } from '$lib';
+	import { PlannerSettings, type Timeframe, t } from '$lib';
 	import { getFontInfo } from '../fonts/fonts';
 
 	let {
@@ -15,8 +15,8 @@
 			| 'quarters'
 			| 'years'
 			| 'none',
-		numWeeksInSideNav = 15,
-		numDaysInSideNav = 15,
+		numWeeksInSideNav = 14,
+		numDaysInSideNav = 14,
 		disableActiveIndicator = false,
 	} = $props();
 
@@ -92,155 +92,171 @@
 </script>
 
 {#if !settings.sideNav.disable}
-	<nav
-		class:right={!settings.sideNav.leftSide}
-		style:font-family="'{settings.sideNav.font}'"
-		style:font-size="{getFontInfo(settings.sideNav.font)?.size || 1}rem">
-		{#if tabs !== 'none'}
-			<ol class="tabs">
-				{#if tabs === 'years' && settings.years.length > 1}
-					{#each settings.years as year (year.id)}
-						<li class="year">
-							<a
-								href="#{year.id}"
-								class:active={!disableActiveIndicator && timeframe.year === year.year}>
-								{year.year}
-							</a>
-						</li>
-					{/each}
-				{/if}
-				{#if tabs === 'quarters'}
-					{#each settings.quarters as quarter (quarter.id)}
-						{#if quarter.year === timeframe.year}
-							<li class="quarter">
-								<a
-									href="#{quarter.id}"
-									class:active={!disableActiveIndicator &&
-										timeframe.quarter === quarter.quarter}>
-									{quarter.nameShort}
-								</a>
-							</li>
-						{/if}
-					{/each}
-				{/if}
-				{#if tabs === 'months'}
-					{#each settings.months as month (month.id)}
-						{#if month.year === timeframe.year}
-							<li class="month">
-								<a
-									href="#{month.id}"
-									class:active={!disableActiveIndicator &&
-										timeframe.month === month.month}>
-									{month.nameShort}
-								</a>
-							</li>
-						{/if}
-					{/each}
-				{/if}
-				{#if tabs === 'weeks-this-year' || tabs === 'weeks-this-month'}
-					{#each weeks as week, i (week.id)}
-						{@const isActive =
-							!disableActiveIndicator && timeframe.weekSinceYear === week.weekSinceYear}
-						{@const isNextWeekInMonth = weeks[i + 1]?.month === timeframe.month}
-						{@const isNextWeekActive =
-							!disableActiveIndicator &&
-							weeks[i + 1]?.weekSinceYear === timeframe.weekSinceYear}
-						{@const isPreviousWeekInMonth = weeks[i - 1]?.month === timeframe.month}
-						{@const isPreviousWeekActive =
-							!disableActiveIndicator &&
-							weeks[i - 1]?.weekSinceYear === timeframe.weekSinceYear}
-						{@const shouldHighlight =
-							!isActive && timeframe.month === week.month && tabs === 'weeks-this-year'}
-						{@const highlightStart =
-							shouldHighlight && isNextWeekInMonth && !isNextWeekActive}
-						{@const highlightEnd =
-							shouldHighlight && isPreviousWeekInMonth && !isPreviousWeekActive}
-						<li class="week">
-							<a
-								href="#{week.id}"
-								class:active={isActive}
-								class:highlight={shouldHighlight}
-								class:highlight-start={highlightStart && !highlightEnd}
-								class:highlight-middle={highlightStart && highlightEnd}
-								class:highlight-end={highlightEnd && !highlightStart}>
-								<small>
-									{settings.weekPage.useWeekNumbersInSideNav
-										? 'WK'
-										: week.start.toLocaleString('default', {
-												month: 'short',
-												timeZone: 'UTC',
-											})}
-								</small>
-								{!settings.weekPage.useWeekNumbersInSideNav
-									? week.start.getUTCDate()
-									: settings.weekPage.useWeekSinceYear
-										? week.weekSinceYear
-										: week.weekSinceMonth}
-							</a>
-						</li>
-					{/each}
-				{/if}
-				{#if tabs === 'days-this-year' || tabs === 'days-this-month' || tabs === 'days-this-week'}
-					{#each days as day, i (day.id)}
-						{@const isActive =
-							!disableActiveIndicator && timeframe.daySinceYear === day.daySinceYear}
-						{@const isSaturday = day.start.getUTCDay() === 6}
-						{@const isSunday = day.start.getUTCDay() === 0}
-						{@const isWeekend = isSaturday || isSunday}
-						{@const shouldHighlight = !isActive && isWeekend && tabs !== 'days-this-week'}
-						{@const highlightStart = shouldHighlight && isSaturday && i < days.length - 1}
-						{@const highlighEnd = shouldHighlight && isSunday && i > 0}
-						<li class="day">
-							<a
-								href="#{day.id}"
-								class:active={isActive}
-								class:highlight={shouldHighlight}
-								class:highlight-start={highlightStart}
-								class:highlight-end={highlighEnd}>
-								<span class="weekday">
-									{day.start.toLocaleString('default', {
-										weekday: 'short',
-										timeZone: 'UTC',
-									})}
-								</span>
-								{day.daySinceMonth}
-							</a>
-						</li>
-					{/each}
-				{/if}
-			</ol>
+	<div class="nav-container" class:right={!settings.sideNav.leftSide}>
+		{#if settings.sideNav.padding > 0}
+			<div class="nav-padding"></div>
 		{/if}
-		<div class="spacer"></div>
-		{#if settings.sideNav.showCollectionLinks && settings.collections.length}
-			<ol class="links">
-				{#each [...settings.collections].reverse() as collection, i (collection.id)}
-					<li><a href="#{collection.id}">{collection.name}</a></li>
-					{#if i !== settings.collections.length - 1}
-						<li class="separator">/</li>
+		<nav
+			style:font-family="'{settings.sideNav.font}'"
+			style:font-size="{getFontInfo(settings.sideNav.font)?.size || 1}rem">
+			{#if tabs !== 'none'}
+				<ol class="tabs">
+					{#if tabs === 'years' && settings.years.length > 1}
+						{#each settings.years as year (year.id)}
+							<li class="year">
+								<a
+									href="#{year.id}"
+									class:active={!disableActiveIndicator && timeframe.year === year.year}>
+									{year.year}
+								</a>
+							</li>
+						{/each}
 					{/if}
-				{/each}
-			</ol>
-		{/if}
-	</nav>
+					{#if tabs === 'quarters'}
+						{#each settings.quarters as quarter (quarter.id)}
+							{#if quarter.year === timeframe.year}
+								<li class="quarter">
+									<a
+										href="#{quarter.id}"
+										class:active={!disableActiveIndicator &&
+											timeframe.quarter === quarter.quarter}>
+										{quarter.nameShort}
+									</a>
+								</li>
+							{/if}
+						{/each}
+					{/if}
+					{#if tabs === 'months'}
+						{#each settings.months as month (month.id)}
+							{#if month.year === timeframe.year}
+								<li class="month">
+									<a
+										href="#{month.id}"
+										class:active={!disableActiveIndicator &&
+											timeframe.month === month.month}>
+										{month.nameShort}
+									</a>
+								</li>
+							{/if}
+						{/each}
+					{/if}
+					{#if tabs === 'weeks-this-year' || tabs === 'weeks-this-month'}
+						{#each weeks as week, i (week.id)}
+							{@const isActive =
+								!disableActiveIndicator && timeframe.weekSinceYear === week.weekSinceYear}
+							{@const isNextWeekInMonth = weeks[i + 1]?.month === timeframe.month}
+							{@const isNextWeekActive =
+								!disableActiveIndicator &&
+								weeks[i + 1]?.weekSinceYear === timeframe.weekSinceYear}
+							{@const isPreviousWeekInMonth = weeks[i - 1]?.month === timeframe.month}
+							{@const isPreviousWeekActive =
+								!disableActiveIndicator &&
+								weeks[i - 1]?.weekSinceYear === timeframe.weekSinceYear}
+							{@const shouldHighlight =
+								!isActive && timeframe.month === week.month && tabs === 'weeks-this-year'}
+							{@const highlightStart =
+								shouldHighlight && isNextWeekInMonth && !isNextWeekActive}
+							{@const highlightEnd =
+								shouldHighlight && isPreviousWeekInMonth && !isPreviousWeekActive}
+							<li class="week">
+								<a
+									href="#{week.id}"
+									class:active={isActive}
+									class:highlight={shouldHighlight}
+									class:highlight-start={highlightStart && !highlightEnd}
+									class:highlight-middle={highlightStart && highlightEnd}
+									class:highlight-end={highlightEnd && !highlightStart}>
+									<small>
+										{settings.weekPage.useWeekNumbersInSideNav
+											? t('weekShort', settings.date.locale)
+											: week.start.toLocaleString(settings.date.locale, {
+													month: 'short',
+													timeZone: 'UTC',
+												})}
+									</small>
+									{!settings.weekPage.useWeekNumbersInSideNav
+										? week.start.getUTCDate()
+										: settings.weekPage.useWeekSinceYear
+											? week.weekSinceYear
+											: week.weekSinceMonth}
+								</a>
+							</li>
+						{/each}
+					{/if}
+					{#if tabs === 'days-this-year' || tabs === 'days-this-month' || tabs === 'days-this-week'}
+						{#each days as day, i (day.id)}
+							{@const isActive =
+								!disableActiveIndicator && timeframe.daySinceYear === day.daySinceYear}
+							{@const isSaturday = day.start.getUTCDay() === 6}
+							{@const isSunday = day.start.getUTCDay() === 0}
+							{@const isWeekend = isSaturday || isSunday}
+							{@const shouldHighlight =
+								!isActive && isWeekend && tabs !== 'days-this-week'}
+							{@const highlightStart =
+								shouldHighlight && isSaturday && i < days.length - 1}
+							{@const highlighEnd = shouldHighlight && isSunday && i > 0}
+							<li class="day">
+								<a
+									href="#{day.id}"
+									class:active={isActive}
+									class:highlight={shouldHighlight}
+									class:highlight-start={highlightStart}
+									class:highlight-end={highlighEnd}>
+									<span class="weekday">
+										{day.start.toLocaleString(settings.date.locale, {
+											weekday: 'short',
+											timeZone: 'UTC',
+										})}
+									</span>
+									{day.daySinceMonth}
+								</a>
+							</li>
+						{/each}
+					{/if}
+				</ol>
+			{/if}
+			<div class="spacer"></div>
+			{#if settings.sideNav.showCollectionLinks && settings.collections.length}
+				<ol class="links">
+					{#each [...settings.collections].reverse() as collection, i (collection.id)}
+						<li><a href="#{collection.id}">{collection.name}</a></li>
+						{#if i !== settings.collections.length - 1}
+							<li class="separator">/</li>
+						{/if}
+					{/each}
+				</ol>
+			{/if}
+		</nav>
+	</div>
 {/if}
 
 <style lang="scss">
-	nav {
+	.nav-container {
 		display: flex;
-		align-items: center;
-		flex-direction: column;
 		position: absolute;
 		top: 0;
 		left: 0;
 		bottom: 0;
-		right: 0;
 		width: var(--sidenav-width);
-		padding: var(--sidenav-width) 0 0;
 		background-color: var(--nav-bg);
 		&.right {
 			left: auto;
 			right: 0;
+			flex-direction: row-reverse;
 		}
+	}
+	.nav-padding {
+		width: var(--sidenav-padding);
+		background-color: var(--nav-bg);
+		flex-shrink: 0;
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		width: var(--sidenav-content-width);
+		padding: var(--sidenav-content-width) 0 0;
+		background-color: var(--nav-bg);
 	}
 	.spacer {
 		flex: 1;
@@ -250,6 +266,9 @@
 		padding: 0;
 		width: 100%;
 		margin: 0;
+		&:last-child {
+			padding-bottom: 50px;
+		}
 	}
 	ol.tabs > li {
 		padding: 0;
@@ -368,7 +387,7 @@
 			}
 		}
 	}
-	nav.right ol.tabs > li {
+	.nav-container.right ol.tabs > li {
 		padding: 0 2px 0 0;
 		a.highlight {
 			border-top-right-radius: var(--radius);
@@ -437,7 +456,7 @@
 		writing-mode: vertical-lr;
 		text-orientation: mixed;
 		transform: rotate(180deg);
-		line-height: var(--sidenav-width);
+		line-height: var(--sidenav-content-width);
 		a {
 			text-decoration: none;
 			color: var(--text-low);

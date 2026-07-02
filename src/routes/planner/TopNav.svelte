@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatToString, PlannerSettings, type Timeframe } from '$lib';
+	import { t } from '$lib/helpers/translations';
 	import HomeIcon from '~icons/material-symbols-light/home-rounded';
 	import { getFontInfo } from '../fonts/fonts';
 
@@ -117,7 +118,7 @@
 				<li>
 					<a href="#{year}-q{quarter}">
 						{!showWeekBreadcrumb && !showMonthBreadcrumb && !showDayBreadcrumb
-							? 'Quarter '
+							? t('quarter', settings.date.locale) + ' '
 							: 'Q'}{quarter}
 					</a>
 				</li>
@@ -125,7 +126,7 @@
 			{#if showMonthBreadcrumb}
 				<li>
 					<a href="#{year}-{month}">
-						{new Date(year, month - 1).toLocaleString('default', {
+						{new Date(year, month - 1).toLocaleString(settings.date.locale, {
 							month: !showWeekBreadcrumb && !showDayBreadcrumb ? 'long' : 'short',
 						})}
 					</a>
@@ -142,7 +143,7 @@
 							{new Date(
 								timeframe.weekYear || timeframe.year!,
 								(timeframe.weekMonth || timeframe.month!) - 1,
-							).toLocaleString('default', {
+							).toLocaleString(settings.date.locale, {
 								month:
 									!showDayBreadcrumb &&
 									(!timeframe.weekMonth || timeframe.weekMonth === timeframe.month) &&
@@ -151,7 +152,10 @@
 										: 'short',
 							})}
 						{/if}
-						{#if !showDayBreadcrumb}Week{:else}WK{/if}
+						{#if !showDayBreadcrumb}{t('week', settings.date.locale)}{:else}{t(
+								'weekShort',
+								settings.date.locale,
+							)}{/if}
 						{settings.weekPage.useWeekSinceYear
 							? timeframe.weekSinceYear
 							: timeframe.weekSinceMonth}
@@ -161,17 +165,18 @@
 			{#if showDayBreadcrumb}
 				<li>
 					<a href="#{timeframe.year}-{timeframe.month}-{timeframe.daySinceMonth}">
-						{timeframe.start.toLocaleString('default', {
+						{timeframe.start.toLocaleString(settings.date.locale, {
 							weekday: 'short',
 							timeZone: 'UTC',
 						})},
-						{timeframe.start.toLocaleString('default', {
+						{timeframe.start.toLocaleString(settings.date.locale, {
 							month: !breadcrumbs.length ? 'long' : 'short',
 							timeZone: 'UTC',
 						})}
 						{@html formatToString(timeframe.daySinceMonth, {
 							type: 'ordinal',
 							html: true,
+							locale: settings.date.locale,
 						})}
 					</a>
 				</li>

@@ -5,6 +5,7 @@
 		timeframe = {} as Timeframe,
 		startWeekOnSunday = false,
 		groupBy = 'week' as 'week' | 'month',
+		locale = 'en-US',
 	} = $props();
 
 	const yearStart = $derived(
@@ -35,7 +36,7 @@
 	<div class="year-by-week">
 		{#each new Array(14) as _, day}
 			<div class="weekday">
-				{new Date(yearStart.getTime() + day * 86400000).toLocaleString('default', {
+				{new Date(yearStart.getTime() + day * 86400000).toLocaleString(locale, {
 					weekday: 'short',
 					timeZone: 'UTC',
 				})}
@@ -50,10 +51,10 @@
 				class:last-col={day % 14 === 13}
 				class:second-week={day % 14 === 7}>
 				<div class="date">
-					{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}
+					{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true, locale })}
 				</div>
 				<div class="month">
-					{date.toLocaleString('default', { month: 'short', timeZone: 'UTC' })}
+					{date.toLocaleString(locale, { month: 'short', timeZone: 'UTC' })}
 				</div>
 			</a>
 		{/each}
@@ -64,7 +65,7 @@
 	<div class="year-by-month">
 		{#each new Array(12) as _, month}
 			<div class="month" style:grid-column={month + 1}>
-				{new Date(Date.UTC(2000, month)).toLocaleString('default', {
+				{new Date(Date.UTC(2000, month)).toLocaleString(locale, {
 					month: 'short',
 					timeZone: 'UTC',
 				})}
@@ -77,7 +78,7 @@
 				class="day"
 				class:first-row={date.getUTCDate() === 1}>
 				<div class="weekday">
-					{date.toLocaleString('default', { weekday: 'short', timeZone: 'UTC' })}
+					{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
 				</div>
 				<div class="date">
 					{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}

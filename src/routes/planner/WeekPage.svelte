@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PlannerSettings, intersect, type Week } from '$lib';
+	import { PlannerSettings, intersect, type Week, t } from '$lib';
 	import Page from '$lib/components/Page.svelte';
 	import SideNav from './SideNav.svelte';
 	import TopNav from './TopNav.svelte';
@@ -22,7 +22,7 @@
 			<TopNav
 				{settings}
 				timeframe={week}
-				breadcrumbs={[{ href: `#${week.id}-pg${i + 2}`, name: `Page ${i + 2}` }]} />
+				breadcrumbs={[{ href: `#${week.id}-pg${i + 2}`, name: `${t('page', settings.date.locale)} ${i + 2}` }]} />
 			<Page display={settings.weekPage.notePagesTemplate} {settings} timeframe={week} />
 		</article>
 	{/each}

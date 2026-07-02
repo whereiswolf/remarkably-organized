@@ -4,6 +4,12 @@
 	import { slide } from 'svelte/transition';
 	import SettingsIcon from '~icons/fa/cog';
 	import LoadingIcon from '~icons/eos-icons/bubble-loading';
+	import CalendarIcon from '~icons/material-symbols-light/calendar-month';
+	import FileIcon from '~icons/material-symbols-light/description';
+	import PaintBrushIcon from '~icons/material-symbols-light/palette';
+	import BarsIcon from '~icons/material-symbols-light/menu';
+	import BookIcon from '~icons/material-symbols-light/collections-bookmark';
+	import ClockIcon from '~icons/material-symbols-light/schedule';
 	import CoverPage from './CoverPage.svelte';
 	import MonthPage from './MonthPage.svelte';
 	import YearPage from './YearPage.svelte';
@@ -50,6 +56,37 @@
 		{ name: 'Habit Checkboxes - Grouped by Month', value: 'habit-year-by-month' },
 	];
 
+	const locales = [
+		{
+			name: 'Auto-detect',
+			value: typeof navigator !== 'undefined' ? navigator.language : 'en-US',
+		},
+		{ name: 'English (US)', value: 'en-US' },
+		{ name: 'English (UK)', value: 'en-GB' },
+		{ name: 'Spanish', value: 'es' },
+		{ name: 'French', value: 'fr' },
+		{ name: 'German', value: 'de' },
+		{ name: 'Italian', value: 'it' },
+		{ name: 'Portuguese', value: 'pt' },
+		{ name: 'Portuguese (Brazil)', value: 'pt-BR' },
+		{ name: 'Dutch', value: 'nl' },
+		{ name: 'Polish', value: 'pl' },
+		{ name: 'Russian', value: 'ru' },
+		{ name: 'Japanese', value: 'ja' },
+		{ name: 'Chinese (Simplified)', value: 'zh-CN' },
+		{ name: 'Chinese (Traditional)', value: 'zh-TW' },
+		{ name: 'Korean', value: 'ko' },
+		{ name: 'Arabic', value: 'ar' },
+		{ name: 'Hindi', value: 'hi' },
+		{ name: 'Swedish', value: 'sv' },
+		{ name: 'Norwegian', value: 'no' },
+		{ name: 'Danish', value: 'da' },
+		{ name: 'Finnish', value: 'fi' },
+		{ name: 'Greek', value: 'el' },
+		{ name: 'Turkish', value: 'tr' },
+		{ name: 'Hebrew', value: 'he' },
+	];
+
 	const font = $derived(fonts.find((f) => f.name === settings.design.font) ?? fonts[0]);
 	const googleFontURL = $derived(
 		getGoogleFontURL([
@@ -89,8 +126,9 @@
 
 	let customTimeframe = $state(false);
 	let showHelp = $state(page.url.searchParams.get('help') !== '0');
-	let showMenu = $state(true);
-	let showAdvancedSettings = $state(false);
+	let activeTab = $state<
+		'general' | 'pages' | 'design' | 'navigation' | 'collections' | 'calendars'
+	>('general');
 	let enableHighResolution = $state(page.url.searchParams.has('highres'));
 	let loadPages = $state(
 		page.url.searchParams.get('help') === '0' &&
@@ -209,10 +247,54 @@
 
 {#if showHelp}<HelpModal onClose={onHelpClose} />{/if}
 
-{#if showMenu}
-	<div class="menu" transition:slide={{ duration: 200 }}>
-		<h2>Settings</h2>
-		<form>
+<div class="menu">
+	<h2>Settings</h2>
+	<nav class="tabs">
+		<button
+			type="button"
+			class:active={activeTab === 'general'}
+			onclick={() => (activeTab = 'general')}>
+			<CalendarIcon />
+			<span>General</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'pages'}
+			onclick={() => (activeTab = 'pages')}>
+			<FileIcon />
+			<span>Pages</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'design'}
+			onclick={() => (activeTab = 'design')}>
+			<PaintBrushIcon />
+			<span>Design</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'navigation'}
+			onclick={() => (activeTab = 'navigation')}>
+			<BarsIcon />
+			<span>Navigation</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'collections'}
+			onclick={() => (activeTab = 'collections')}>
+			<BookIcon />
+			<span>Collections</span>
+		</button>
+		<button
+			type="button"
+			class:active={activeTab === 'calendars'}
+			onclick={() => (activeTab = 'calendars')}>
+			<ClockIcon />
+			<span>Events</span>
+		</button>
+	</nav>
+	<form>
+		{#if activeTab === 'general'}
 			<fieldset>
 				<label for="timeframeBasedOnYear">Year</label>
 				<select
@@ -263,6 +345,14 @@
 					id="startWeekOnSunday" />
 				<label for="startWeekOnSunday">Start Week on Sunday</label>
 			</div>
+			<fieldset>
+				<label for="locale">Language/Locale</label>
+				<select id="locale" bind:value={settings.date.locale}>
+					{#each locales as locale, i (i)}
+						<option value={locale.value}>{locale.name}</option>
+					{/each}
+				</select>
+			</fieldset>
 			<div class="checkbox">
 				<input
 					type="checkbox"
@@ -270,538 +360,560 @@
 					id="enableHighResolution" />
 				<label for="enableHighResolution">Print in high resolution (bigger file)</label>
 			</div>
+		{/if}
 
-			{#if showAdvancedSettings}
-				<h3>Cover Page</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.coverPage.disable}
-						id="disableCoverPage" />
-					<label for="disableCoverPage">Disable Cover Page</label>
-				</div>
-				{#if !settings.coverPage.disable}
-					<fieldset>
-						<label for="coverPageTitle">Cover Page Title</label>
-						<input
-							type="text"
-							placeholder="Cover Page Title"
-							id="coverPageTitle"
-							bind:value={settings.coverPage.title} />
-					</fieldset>
-					<fieldset>
-						<label for="name">Contact Name</label>
-						<input
-							type="text"
-							placeholder="Name"
-							id="name"
-							bind:value={settings.coverPage.name} />
-					</fieldset>
-					<fieldset>
-						<label for="email">Contact Email/Phone</label>
-						<input
-							type="text"
-							placeholder="Contact Email/Phone"
-							id="email"
-							bind:value={settings.coverPage.email} />
-					</fieldset>
-					<fieldset>
-						<label for="coverPageFont">Font</label>
-						<select id="coverPageFont" bind:value={settings.coverPage.font}>
-							{#each fonts as font (font.name)}
-								<option value={font.name}>{font.name}</option>
-							{/each}
-						</select>
-					</fieldset>
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.coverPage.showCollectionLinks}
-							id="coverPageShowCollectionLinks" />
-						<label for="coverPageShowCollectionLinks">Show Links to Collections</label>
-					</div>
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.coverPage.darkBackground}
-							id="coverPageDarkBackground" />
-						<label for="coverPageDarkBackground">Dark Background</label>
-					</div>
-				{/if}
-
-				<h3>Yearly View</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.yearPage.disable}
-						id="yearPageDisable" />
-					<label for="yearPageDisable">Disable Yearly View</label>
-				</div>
-				{#if !settings.yearPage.disable}
-					<fieldset>
-						<label for="yearNotePagesAmount">Additional Note Pages</label>
-						<input
-							type="number"
-							placeholder="Additional Note Pages"
-							id="yearNotePagesAmount"
-							min="0"
-							step="1"
-							bind:value={settings.yearPage.notePagesAmount} />
-					</fieldset>
-					{#if settings.yearPage.notePagesAmount > 0}
-						<fieldset>
-							<label for="yearNotePagesTemplate">Additional Note Pages Template</label>
-							<select
-								id="yearNotePagesTemplate"
-								bind:value={settings.yearPage.notePagesTemplate}>
-								{#each getAvailablePageTemplates('year') as template (template.value)}
-									<option value={template.value}>{template.name}</option>
-								{/each}
-							</select>
-						</fieldset>
-					{/if}
-				{/if}
-
-				<h3>Quarterly View</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.quarterPage.disable}
-						id="quarterPageDisable" />
-					<label for="quarterPageDisable">Disable Quarterly View</label>
-				</div>
-				{#if !settings.quarterPage.disable}
-					<fieldset>
-						<label for="quarterNotePagesAmount">Additional Note Pages</label>
-						<input
-							type="number"
-							placeholder="Additional Note Pages"
-							id="quarterNotePagesAmount"
-							min="0"
-							step="1"
-							bind:value={settings.quarterPage.notePagesAmount} />
-					</fieldset>
-					{#if settings.quarterPage.notePagesAmount > 0}
-						<fieldset>
-							<label for="quarterNotePagesTemplate">Additional Note Pages Template</label>
-							<select
-								id="quarterNotePagesTemplate"
-								bind:value={settings.quarterPage.notePagesTemplate}>
-								{#each getAvailablePageTemplates('quarter') as template (template.value)}
-									<option value={template.value}>{template.name}</option>
-								{/each}
-							</select>
-						</fieldset>
-					{/if}
-				{/if}
-
-				<h3>Monthly View</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.monthPage.disable}
-						id="monthPageDisable" />
-					<label for="monthPageDisable">Disable Monthly View</label>
-				</div>
-				{#if !settings.monthPage.disable}
-					<fieldset>
-						<label for="monthPageTemplate">Month Page Template</label>
-						<select id="monthPageTemplate" bind:value={settings.monthPage.template}>
-							{#each getAvailablePageTemplates('month') as template (template.value)}
-								<option value={template.value}>{template.name}</option>
-							{/each}
-						</select>
-					</fieldset>
-					<fieldset>
-						<label for="monthNotePagesAmount">Additional Note Pages</label>
-						<input
-							type="number"
-							placeholder="Additional Note Pages"
-							id="monthNotePagesAmount"
-							min="0"
-							step="1"
-							bind:value={settings.monthPage.notePagesAmount} />
-					</fieldset>
-					{#if settings.monthPage.notePagesAmount > 0}
-						<fieldset>
-							<label for="monthNotePagesTemplate">Additional Note Pages Template</label>
-							<select
-								id="monthNotePagesTemplate"
-								bind:value={settings.monthPage.notePagesTemplate}>
-								{#each getAvailablePageTemplates('month') as template (template.value)}
-									<option value={template.value}>{template.name}</option>
-								{/each}
-							</select>
-						</fieldset>
-					{/if}
-				{/if}
-
-				<h3>Weekly View</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.weekPage.disable}
-						id="weekPageDisable" />
-					<label for="weekPageDisable">Disable Weekly View</label>
-				</div>
-				{#if !settings.weekPage.disable}
-					<fieldset>
-						<label for="weekPageTemplate">Week Page Template</label>
-						<select id="weekPageTemplate" bind:value={settings.weekPage.template}>
-							{#each getAvailablePageTemplates('week') as template (template.value)}
-								<option value={template.value}>{template.name}</option>
-							{/each}
-						</select>
-					</fieldset>
-					<fieldset>
-						<label for="weekNotePagesAmount">Additional Note Pages</label>
-						<input
-							type="number"
-							placeholder="Additional Note Pages"
-							id="weekNotePagesAmount"
-							min="0"
-							step="1"
-							bind:value={settings.weekPage.notePagesAmount} />
-					</fieldset>
-					{#if settings.weekPage.notePagesAmount > 0}
-						<fieldset>
-							<label for="weekNotePagesTemplate">Additional Note Pages Template</label>
-							<select
-								id="weekNotePagesTemplate"
-								bind:value={settings.weekPage.notePagesTemplate}>
-								{#each getAvailablePageTemplates('week') as template (template.value)}
-									<option value={template.value}>{template.name}</option>
-								{/each}
-							</select>
-						</fieldset>
-					{/if}
-					<fieldset>
-						<label for="sideNavDisplay">Sidebar Display</label>
-						<select id="sideNavDisplay" bind:value={settings.weekPage.sideNavDisplay}>
-							<option value="days-this-week">Days of the Week</option>
-							<option value="days-this-month">Days of the Month</option>
-							<option value="weeks-this-year">Weeks of the Year</option>
-							<option value="weeks-this-month">Weeks of the Month</option>
-							<option value="months">Months</option>
-							<option value="none">None</option>
-						</select>
-					</fieldset>
-					{#if settings.weekPage.sideNavDisplay === 'weeks-this-month' || settings.weekPage.sideNavDisplay === 'weeks-this-year'}
-						<div class="checkbox">
-							<input
-								type="checkbox"
-								bind:checked={settings.weekPage.useWeekNumbersInSideNav}
-								id="useWeekNumbersInSideNav" />
-							<label for="useWeekNumbersInSideNav">Show week numbers in side bar</label>
-						</div>
-					{/if}
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.weekPage.useWeekSinceYear}
-							id="useWeekSinceYear" />
-						<label for="useWeekSinceYear">Use week number from start of year</label>
-					</div>
-				{/if}
-
-				<h3>Daily View</h3>
-				<div class="checkbox">
-					<input
-						type="checkbox"
-						bind:checked={settings.dayPage.disable}
-						id="dayPageDisable" />
-					<label for="dayPageDisable">Disable Daily View</label>
-				</div>
-				{#if !settings.dayPage.disable}
-					<fieldset>
-						<label for="dayPageTemplate">Day Page Template</label>
-						<select id="dayPageTemplate" bind:value={settings.dayPage.template}>
-							{#each getAvailablePageTemplates('day') as template (template.value)}
-								<option value={template.value}>{template.name}</option>
-							{/each}
-						</select>
-					</fieldset>
-					<fieldset>
-						<label for="dayNotePagesAmount">Additional Note Pages</label>
-						<input
-							type="number"
-							placeholder="Additional Note Pages"
-							id="dayNotePagesAmount"
-							min="0"
-							step="1"
-							bind:value={settings.dayPage.notePagesAmount} />
-					</fieldset>
-					{#if settings.dayPage.notePagesAmount > 0}
-						<fieldset>
-							<label for="dayNotePagesTemplate">Additional Note Pages Template</label>
-							<select
-								id="dayNotePagesTemplate"
-								bind:value={settings.dayPage.notePagesTemplate}>
-								{#each getAvailablePageTemplates('day') as template (template.value)}
-									<option value={template.value}>{template.name}</option>
-								{/each}
-							</select>
-						</fieldset>
-					{/if}
-					<fieldset>
-						<label for="sideNavDisplay">Sidebar Display</label>
-						<select id="sideNavDisplay" bind:value={settings.dayPage.sideNavDisplay}>
-							<option value="days-this-week">Days of the Week</option>
-							<option value="days-this-month">Days of the Month</option>
-							<option value="days-this-year">Days of the Year</option>
-							<option value="weeks-this-year">Weeks of the Year</option>
-							<option value="weeks-this-month">Weeks of the Month</option>
-							<option value="months">Months</option>
-							<option value="none">None</option>
-						</select>
-					</fieldset>
-				{/if}
-
-				<h3>Design</h3>
+		{#if activeTab === 'pages'}
+			<h3>Cover Page</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.coverPage.disable}
+					id="disableCoverPage" />
+				<label for="disableCoverPage">Disable Cover Page</label>
+			</div>
+			{#if !settings.coverPage.disable}
 				<fieldset>
-					<label for="designFont">Font</label>
-					<select id="designFont" bind:value={settings.design.font}>
+					<label for="coverPageTitle">Cover Page Title</label>
+					<input
+						type="text"
+						placeholder="Cover Page Title"
+						id="coverPageTitle"
+						bind:value={settings.coverPage.title} />
+				</fieldset>
+				<fieldset>
+					<label for="name">Contact Name</label>
+					<input
+						type="text"
+						placeholder="Name"
+						id="name"
+						bind:value={settings.coverPage.name} />
+				</fieldset>
+				<fieldset>
+					<label for="email">Contact Email/Phone</label>
+					<input
+						type="text"
+						placeholder="Contact Email/Phone"
+						id="email"
+						bind:value={settings.coverPage.email} />
+				</fieldset>
+				<fieldset>
+					<label for="coverPageFont">Font</label>
+					<select id="coverPageFont" bind:value={settings.coverPage.font}>
 						{#each fonts as font (font.name)}
 							<option value={font.name}>{font.name}</option>
 						{/each}
 					</select>
 				</fieldset>
-				<fieldset>
-					<label for="start">Text Color</label>
-					<input
-						type="color"
-						placeholder="Text Color"
-						id="start"
-						bind:value={settings.design.colorText} />
-				</fieldset>
-				<fieldset>
-					<label for="start">Lines/Border Color</label>
-					<input
-						type="color"
-						placeholder="Lines/Border"
-						id="start"
-						bind:value={settings.design.colorLines} />
-				</fieldset>
-				<fieldset>
-					<label for="start">Dots Color</label>
-					<input
-						type="color"
-						placeholder="Lines/Border"
-						id="start"
-						bind:value={settings.design.colorDots} />
-				</fieldset>
-
-				<h3>Sidebar Navigation</h3>
 				<div class="checkbox">
 					<input
 						type="checkbox"
-						bind:checked={settings.sideNav.disable}
-						id="sideNavDisable" />
-					<label for="sideNavDisable">Disable Sidebar</label>
+						bind:checked={settings.coverPage.showCollectionLinks}
+						id="coverPageShowCollectionLinks" />
+					<label for="coverPageShowCollectionLinks">Show Links to Collections</label>
 				</div>
-				{#if !settings.sideNav.disable}
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.sideNav.leftSide}
-							id="sideNavLeftSide" />
-						<label for="sideNavLeftSide">Show Sidebar on Left</label>
-					</div>
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.sideNav.showCollectionLinks}
-							id="sideNavShowCollectionLinks" />
-						<label for="sideNavShowCollectionLinks">Show Links to Collections</label>
-					</div>
+				<div class="checkbox">
+					<input
+						type="checkbox"
+						bind:checked={settings.coverPage.darkBackground}
+						id="coverPageDarkBackground" />
+					<label for="coverPageDarkBackground">Dark Background</label>
+				</div>
+			{/if}
+
+			<h3>Yearly View</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.yearPage.disable}
+					id="yearPageDisable" />
+				<label for="yearPageDisable">Disable Yearly View</label>
+			</div>
+			{#if !settings.yearPage.disable}
+				<fieldset>
+					<label for="yearNotePagesAmount">Additional Note Pages</label>
+					<input
+						type="number"
+						placeholder="Additional Note Pages"
+						id="yearNotePagesAmount"
+						min="0"
+						step="1"
+						bind:value={settings.yearPage.notePagesAmount} />
+				</fieldset>
+				{#if settings.yearPage.notePagesAmount > 0}
 					<fieldset>
-						<label for="sideNavFont">Font</label>
-						<select id="sideNavFont" bind:value={settings.sideNav.font}>
-							{#each fonts as font (font.name)}
-								<option value={font.name}>{font.name}</option>
+						<label for="yearNotePagesTemplate">Additional Note Pages Template</label>
+						<select
+							id="yearNotePagesTemplate"
+							bind:value={settings.yearPage.notePagesTemplate}>
+							{#each getAvailablePageTemplates('year') as template (template.value)}
+								<option value={template.value}>{template.name}</option>
 							{/each}
 						</select>
 					</fieldset>
 				{/if}
+			{/if}
 
-				<h3>Topbar Navigation</h3>
-				<div class="checkbox">
+			<h3>Quarterly View</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.quarterPage.disable}
+					id="quarterPageDisable" />
+				<label for="quarterPageDisable">Disable Quarterly View</label>
+			</div>
+			{#if !settings.quarterPage.disable}
+				<fieldset>
+					<label for="quarterNotePagesAmount">Additional Note Pages</label>
 					<input
-						type="checkbox"
-						bind:checked={settings.topNav.disable}
-						id="topNavDisable" />
-					<label for="topNavDisable">Disable Topbar</label>
-				</div>
-				{#if !settings.topNav.disable}
-					<div class="checkbox">
-						<input
-							type="checkbox"
-							bind:checked={settings.topNav.showCollectionLinks}
-							id="topNavShowCollectionLinks" />
-						<label for="topNavShowCollectionLinks">Show Links to Collections</label>
-					</div>
+						type="number"
+						placeholder="Additional Note Pages"
+						id="quarterNotePagesAmount"
+						min="0"
+						step="1"
+						bind:value={settings.quarterPage.notePagesAmount} />
+				</fieldset>
+				{#if settings.quarterPage.notePagesAmount > 0}
 					<fieldset>
-						<label for="topNavFont">Font</label>
-						<select id="topNavFont" bind:value={settings.topNav.font}>
-							{#each fonts as font (font.name)}
-								<option value={font.name}>{font.name}</option>
+						<label for="quarterNotePagesTemplate">Additional Note Pages Template</label>
+						<select
+							id="quarterNotePagesTemplate"
+							bind:value={settings.quarterPage.notePagesTemplate}>
+							{#each getAvailablePageTemplates('quarter') as template (template.value)}
+								<option value={template.value}>{template.name}</option>
 							{/each}
 						</select>
 					</fieldset>
 				{/if}
+			{/if}
 
-				<h3>Collections</h3>
-				<div class="collections">
-					{#each settings.collections as collection, i (collection.id)}
-						<fieldset>
-							<label for="">Collection {i + 1}</label>
-							<input type="text" bind:value={collection.name} placeholder="Name" />
-							<fieldset style="margin-top: 1rem;">
-								<label for="collection-{collection.id}-type">Page Template</label>
-								<select id="collection-{collection.id}-type" bind:value={collection.type}>
-									{#each getAvailablePageTemplates('collection') as template}
-										<option value={template.value}>{template.name}</option>
-									{/each}
-								</select>
-							</fieldset>
-							{#if collection.type.startsWith('numbered') || collection.type.startsWith('lined') || collection.type.startsWith('todo')}
-								<fieldset style="margin-top: 1rem;">
-									<label for="collection-{collection.id}-columns">Columns</label>
-									<input
-										type="number"
-										placeholder="Columns"
-										id="collection-{collection.id}-columns"
-										min="1"
-										step="1"
-										bind:value={collection.columns} />
-								</fieldset>
-							{/if}
-							<fieldset style="margin-top: 1rem;">
-								<label for="collection-{collection.id}-numIndexPages">
-									Number of Index Pages
-								</label>
-								<input
-									type="number"
-									placeholder="Number of Index Pages"
-									id="collection-{collection.id}-numIndexPages"
-									min="0"
-									step="1"
-									bind:value={collection.numIndexPages} />
-							</fieldset>
-							<fieldset style="margin-top: 1rem;">
-								<label for="collection-{collection.id}-total">
-									Number of Items Per Index Page
-								</label>
-								<input
-									type="number"
-									placeholder="Number of Items Per Index Page"
-									id="collection-{collection.id}-total"
-									min="1"
-									max="180"
-									step="1"
-									bind:value={collection.total} />
-							</fieldset>
-							<fieldset style="margin-top: 1rem;">
-								<label for="collection-{collection.id}-numPagesPerItem">
-									Number of Pages Per Item
-								</label>
-								<input
-									type="number"
-									placeholder="Number of Pages Per Item"
-									id="collection-{collection.id}-numPagesPerItem"
-									min="1"
-									step="1"
-									bind:value={collection.numPagesPerItem} />
-							</fieldset>
-							<button
-								type="button"
-								onclick={() => settings.collections.splice(i, 1)}
-								style:color="var(--error)">
-								Remove Collection
-							</button>
-						</fieldset>
+			<h3>Monthly View</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.monthPage.disable}
+					id="monthPageDisable" />
+				<label for="monthPageDisable">Disable Monthly View</label>
+			</div>
+			{#if !settings.monthPage.disable}
+				<fieldset>
+					<label for="monthPageTemplate">Month Page Template</label>
+					<select id="monthPageTemplate" bind:value={settings.monthPage.template}>
+						{#each getAvailablePageTemplates('month') as template (template.value)}
+							<option value={template.value}>{template.name}</option>
+						{/each}
+					</select>
+				</fieldset>
+				<fieldset>
+					<label for="monthNotePagesAmount">Additional Note Pages</label>
+					<input
+						type="number"
+						placeholder="Additional Note Pages"
+						id="monthNotePagesAmount"
+						min="0"
+						step="1"
+						bind:value={settings.monthPage.notePagesAmount} />
+				</fieldset>
+				{#if settings.monthPage.notePagesAmount > 0}
+					<fieldset>
+						<label for="monthNotePagesTemplate">Additional Note Pages Template</label>
+						<select
+							id="monthNotePagesTemplate"
+							bind:value={settings.monthPage.notePagesTemplate}>
+							{#each getAvailablePageTemplates('month') as template (template.value)}
+								<option value={template.value}>{template.name}</option>
+							{/each}
+						</select>
+					</fieldset>
+				{/if}
+			{/if}
+
+			<h3>Weekly View</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.weekPage.disable}
+					id="weekPageDisable" />
+				<label for="weekPageDisable">Disable Weekly View</label>
+			</div>
+			{#if !settings.weekPage.disable}
+				<fieldset>
+					<label for="weekPageTemplate">Week Page Template</label>
+					<select id="weekPageTemplate" bind:value={settings.weekPage.template}>
+						{#each getAvailablePageTemplates('week') as template (template.value)}
+							<option value={template.value}>{template.name}</option>
+						{/each}
+					</select>
+				</fieldset>
+				<fieldset>
+					<label for="weekNotePagesAmount">Additional Note Pages</label>
+					<input
+						type="number"
+						placeholder="Additional Note Pages"
+						id="weekNotePagesAmount"
+						min="0"
+						step="1"
+						bind:value={settings.weekPage.notePagesAmount} />
+				</fieldset>
+				{#if settings.weekPage.notePagesAmount > 0}
+					<fieldset>
+						<label for="weekNotePagesTemplate">Additional Note Pages Template</label>
+						<select
+							id="weekNotePagesTemplate"
+							bind:value={settings.weekPage.notePagesTemplate}>
+							{#each getAvailablePageTemplates('week') as template (template.value)}
+								<option value={template.value}>{template.name}</option>
+							{/each}
+						</select>
+					</fieldset>
+				{/if}
+				<fieldset>
+					<label for="sideNavDisplay">Sidebar Display</label>
+					<select id="sideNavDisplay" bind:value={settings.weekPage.sideNavDisplay}>
+						<option value="days-this-week">Days of the Week</option>
+						<option value="days-this-month">Days of the Month</option>
+						<option value="weeks-this-year">Weeks of the Year</option>
+						<option value="weeks-this-month">Weeks of the Month</option>
+						<option value="months">Months</option>
+						<option value="none">None</option>
+					</select>
+				</fieldset>
+				{#if settings.weekPage.sideNavDisplay === 'weeks-this-month' || settings.weekPage.sideNavDisplay === 'weeks-this-year'}
+					<div class="checkbox">
+						<input
+							type="checkbox"
+							bind:checked={settings.weekPage.useWeekNumbersInSideNav}
+							id="useWeekNumbersInSideNav" />
+						<label for="useWeekNumbersInSideNav">Show week numbers in side bar</label>
+					</div>
+				{/if}
+				<div class="checkbox">
+					<input
+						type="checkbox"
+						bind:checked={settings.weekPage.useWeekSinceYear}
+						id="useWeekSinceYear" />
+					<label for="useWeekSinceYear">Use week number from start of year</label>
+				</div>
+			{/if}
+
+			<h3>Daily View</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.dayPage.disable}
+					id="dayPageDisable" />
+				<label for="dayPageDisable">Disable Daily View</label>
+			</div>
+			{#if !settings.dayPage.disable}
+				<fieldset>
+					<label for="dayPageTemplate">Day Page Template</label>
+					<select id="dayPageTemplate" bind:value={settings.dayPage.template}>
+						{#each getAvailablePageTemplates('day') as template (template.value)}
+							<option value={template.value}>{template.name}</option>
+						{/each}
+					</select>
+				</fieldset>
+				<fieldset>
+					<label for="dayNotePagesAmount">Additional Note Pages</label>
+					<input
+						type="number"
+						placeholder="Additional Note Pages"
+						id="dayNotePagesAmount"
+						min="0"
+						step="1"
+						bind:value={settings.dayPage.notePagesAmount} />
+				</fieldset>
+				{#if settings.dayPage.notePagesAmount > 0}
+					<fieldset>
+						<label for="dayNotePagesTemplate">Additional Note Pages Template</label>
+						<select
+							id="dayNotePagesTemplate"
+							bind:value={settings.dayPage.notePagesTemplate}>
+							{#each getAvailablePageTemplates('day') as template (template.value)}
+								<option value={template.value}>{template.name}</option>
+							{/each}
+						</select>
+					</fieldset>
+				{/if}
+				<fieldset>
+					<label for="sideNavDisplay">Sidebar Display</label>
+					<select id="sideNavDisplay" bind:value={settings.dayPage.sideNavDisplay}>
+						<option value="days-this-week">Days of the Week</option>
+						<option value="days-this-month">Days of the Month</option>
+						<option value="days-this-year">Days of the Year</option>
+						<option value="weeks-this-year">Weeks of the Year</option>
+						<option value="weeks-this-month">Weeks of the Month</option>
+						<option value="months">Months</option>
+						<option value="none">None</option>
+					</select>
+				</fieldset>
+			{/if}
+		{/if}
+
+		{#if activeTab === 'design'}
+			<h3>Design</h3>
+			<fieldset>
+				<label for="designFont">Font</label>
+				<select id="designFont" bind:value={settings.design.font}>
+					{#each fonts as font (font.name)}
+						<option value={font.name}>{font.name}</option>
 					{/each}
-					<button
-						type="button"
-						onclick={() =>
-							settings.collections.push({
-								name: 'Notes',
-								id: `${Date.now()}`,
-								total: 20,
-								type: 'blank',
-								numIndexPages: 1,
-								numPagesPerItem: 1,
-								columns: 1,
-							})}>
-						Add New Collection
-					</button>
-				</div>
+				</select>
+			</fieldset>
+			<fieldset>
+				<label for="start">Text Color</label>
+				<input
+					type="color"
+					placeholder="Text Color"
+					id="start"
+					bind:value={settings.design.colorText} />
+			</fieldset>
+			<fieldset>
+				<label for="start">Lines/Border Color</label>
+				<input
+					type="color"
+					placeholder="Lines/Border"
+					id="start"
+					bind:value={settings.design.colorLines} />
+			</fieldset>
+			<fieldset>
+				<label for="start">Dots Color</label>
+				<input
+					type="color"
+					placeholder="Lines/Border"
+					id="start"
+					bind:value={settings.design.colorDots} />
+			</fieldset>
+		{/if}
 
-				<h3>Calendar Events</h3>
-				{#each settings.calendars as calendar, i (calendar.url)}
-					<h4 style="margin-top: 1rem;">
-						{calendar.name || 'Custom Calendar'} ({calendar.events.length} Events)
-						{#if calendar.lastUpdated}
-							<p
-								style="display: block; font-weight: normal; font-size: .8rem; opacity: .8">
-								Last Updated: {new Date(calendar.lastUpdated).toLocaleString()}
-							</p>
-						{/if}
-					</h4>
+		{#if activeTab === 'navigation'}
+			<h3>Sidebar Navigation</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.sideNav.disable}
+					id="sideNavDisable" />
+				<label for="sideNavDisable">Disable Sidebar</label>
+			</div>
+			{#if !settings.sideNav.disable}
+				<div class="checkbox">
+					<input
+						type="checkbox"
+						bind:checked={settings.sideNav.leftSide}
+						id="sideNavLeftSide" />
+					<label for="sideNavLeftSide">Show Sidebar on Left</label>
+				</div>
+				<div class="checkbox">
+					<input
+						type="checkbox"
+						bind:checked={settings.sideNav.showCollectionLinks}
+						id="sideNavShowCollectionLinks" />
+					<label for="sideNavShowCollectionLinks">Show Links to Collections</label>
+				</div>
+				<fieldset>
+					<label for="sideNavWidth">Sidebar Width (px)</label>
+					<input
+						type="number"
+						placeholder="Sidebar Width"
+						id="sideNavWidth"
+						min="30"
+						max="100"
+						step="1"
+						bind:value={settings.sideNav.width} />
+				</fieldset>
+				<fieldset>
+					<label for="sideNavPadding">Sidebar Padding (px)</label>
+					<input
+						type="number"
+						placeholder="Sidebar Padding"
+						id="sideNavPadding"
+						min="0"
+						max="20"
+						step="1"
+						bind:value={settings.sideNav.padding} />
+				</fieldset>
+				<fieldset>
+					<label for="sideNavFont">Font</label>
+					<select id="sideNavFont" bind:value={settings.sideNav.font}>
+						{#each fonts as font (font.name)}
+							<option value={font.name}>{font.name}</option>
+						{/each}
+					</select>
+				</fieldset>
+			{/if}
+
+			<h3>Topbar Navigation</h3>
+			<div class="checkbox">
+				<input
+					type="checkbox"
+					bind:checked={settings.topNav.disable}
+					id="topNavDisable" />
+				<label for="topNavDisable">Disable Topbar</label>
+			</div>
+			{#if !settings.topNav.disable}
+				<div class="checkbox">
+					<input
+						type="checkbox"
+						bind:checked={settings.topNav.showCollectionLinks}
+						id="topNavShowCollectionLinks" />
+					<label for="topNavShowCollectionLinks">Show Links to Collections</label>
+				</div>
+				<fieldset>
+					<label for="topNavFont">Font</label>
+					<select id="topNavFont" bind:value={settings.topNav.font}>
+						{#each fonts as font (font.name)}
+							<option value={font.name}>{font.name}</option>
+						{/each}
+					</select>
+				</fieldset>
+			{/if}
+		{/if}
+
+		{#if activeTab === 'collections'}
+			<h3>Collections</h3>
+			<div class="collections">
+				{#each settings.collections as collection, i (collection.id)}
 					<fieldset>
-						<label for="calendar-{i}-url">Calendar URL (ICS file)</label>
-						<input
-							type="text"
-							placeholder="Calendar URL (ICS file)"
-							id="calendar-{i}-url"
-							bind:value={calendar.url} />
-					</fieldset>
-					<div style="display: flex;">
+						<label for="">Collection {i + 1}</label>
+						<input type="text" bind:value={collection.name} placeholder="Name" />
+						<fieldset style="margin-top: 1rem;">
+							<label for="collection-{collection.id}-type">Page Template</label>
+							<select id="collection-{collection.id}-type" bind:value={collection.type}>
+								{#each getAvailablePageTemplates('collection') as template}
+									<option value={template.value}>{template.name}</option>
+								{/each}
+							</select>
+						</fieldset>
+						{#if collection.type.startsWith('numbered') || collection.type.startsWith('lined') || collection.type.startsWith('todo')}
+							<fieldset style="margin-top: 1rem;">
+								<label for="collection-{collection.id}-columns">Columns</label>
+								<input
+									type="number"
+									placeholder="Columns"
+									id="collection-{collection.id}-columns"
+									min="1"
+									step="1"
+									bind:value={collection.columns} />
+							</fieldset>
+						{/if}
+						<fieldset style="margin-top: 1rem;">
+							<label for="collection-{collection.id}-numIndexPages">
+								Number of Index Pages
+							</label>
+							<input
+								type="number"
+								placeholder="Number of Index Pages"
+								id="collection-{collection.id}-numIndexPages"
+								min="0"
+								step="1"
+								bind:value={collection.numIndexPages} />
+						</fieldset>
+						<fieldset style="margin-top: 1rem;">
+							<label for="collection-{collection.id}-total">
+								Number of Items Per Index Page
+							</label>
+							<input
+								type="number"
+								placeholder="Number of Items Per Index Page"
+								id="collection-{collection.id}-total"
+								min="1"
+								max="180"
+								step="1"
+								bind:value={collection.total} />
+						</fieldset>
+						<fieldset style="margin-top: 1rem;">
+							<label for="collection-{collection.id}-numPagesPerItem">
+								Number of Pages Per Item
+							</label>
+							<input
+								type="number"
+								placeholder="Number of Pages Per Item"
+								id="collection-{collection.id}-numPagesPerItem"
+								min="1"
+								step="1"
+								bind:value={collection.numPagesPerItem} />
+						</fieldset>
 						<button
 							type="button"
-							style="flex: 1"
-							disabled={settings.calendars.some((calendar) => calendar.updating)}
-							onclick={() => settings.importEvents(i)}>
-							{calendar.updating ? `Importing...` : `Import Events`}
-						</button>
-						<button
-							type="button"
-							style="flex: 1"
-							disabled={settings.calendars.some((calendar) => calendar.updating)}
-							onclick={() => settings.calendars.splice(i, 1)}
+							onclick={() => settings.collections.splice(i, 1)}
 							style:color="var(--error)">
-							Remove Calendar
+							Remove Collection
 						</button>
-					</div>
+					</fieldset>
 				{/each}
 				<button
 					type="button"
-					disabled={settings.calendars.some((calendar) => calendar.updating)}
 					onclick={() =>
-						settings.calendars.push({
-							events: [],
-							lastUpdated: 0,
-							name: '',
-							updating: false,
-							url: '',
+						settings.collections.push({
+							name: 'Notes',
+							id: `${Date.now()}`,
+							total: 20,
+							type: 'blank',
+							numIndexPages: 1,
+							numPagesPerItem: 1,
+							columns: 1,
 						})}>
-					Add New Calendar
+					Add New Collection
 				</button>
-			{:else}
-				<button
-					type="button"
-					style="margin: 1rem 0;"
-					onclick={() => (showAdvancedSettings = true)}>
-					Advanced Settings
-				</button>
-			{/if}
-		</form>
-		<div class="actions">
-			<button class="export" onclick={() => window.print()}>Print to PDF</button>
-		</div>
+			</div>
+		{/if}
+
+		{#if activeTab === 'calendars'}
+			<h3>Calendar Events</h3>
+			{#each settings.calendars as calendar, i (calendar.url)}
+				<h4 style="margin-top: 1rem;">
+					{calendar.name || 'Custom Calendar'} ({calendar.events.length} Events)
+					{#if calendar.lastUpdated}
+						<p style="display: block; font-weight: normal; font-size: .8rem; opacity: .8">
+							Last Updated: {new Date(calendar.lastUpdated).toLocaleString()}
+						</p>
+					{/if}
+				</h4>
+				<fieldset>
+					<label for="calendar-{i}-url">Calendar URL (ICS file)</label>
+					<input
+						type="text"
+						placeholder="Calendar URL (ICS file)"
+						id="calendar-{i}-url"
+						bind:value={calendar.url} />
+				</fieldset>
+				<div style="display: flex;">
+					<button
+						type="button"
+						style="flex: 1"
+						disabled={settings.calendars.some((calendar) => calendar.updating)}
+						onclick={() => settings.importEvents(i)}>
+						{calendar.updating ? `Importing...` : `Import Events`}
+					</button>
+					<button
+						type="button"
+						style="flex: 1"
+						disabled={settings.calendars.some((calendar) => calendar.updating)}
+						onclick={() => settings.calendars.splice(i, 1)}
+						style:color="var(--error)">
+						Remove Calendar
+					</button>
+				</div>
+			{/each}
+			<button
+				type="button"
+				disabled={settings.calendars.some((calendar) => calendar.updating)}
+				onclick={() =>
+					settings.calendars.push({
+						events: [],
+						lastUpdated: 0,
+						name: '',
+						updating: false,
+						url: '',
+					})}>
+				Add New Calendar
+			</button>
+		{/if}
+	</form>
+	<div class="actions">
+		<button class="export" onclick={() => window.print()}>Print to PDF</button>
 	</div>
-{/if}
-<button onclick={() => (showMenu = !showMenu)} class="menu-trigger">
+</div>
+<button class="menu-trigger">
 	<SettingsIcon />
 </button>
 <Toast />
@@ -809,7 +921,13 @@
 <main
 	style:--doc-width="{702}px"
 	style:--doc-height="{702 * (1 / (settings.design.aspectRatio || 1))}px"
-	style:--sidenav-width="{settings.sideNav.disable ? 0 : settings.sideNav.width}px"
+	style:--sidenav-width="{settings.sideNav.disable
+		? 0
+		: settings.sideNav.width + settings.sideNav.padding}px"
+	style:--sidenav-padding="{settings.sideNav.disable ? 0 : settings.sideNav.padding}px"
+	style:--sidenav-content-width="{settings.sideNav.disable
+		? 0
+		: settings.sideNav.width}px"
 	style:--topnav-height="{settings.topNav.disable ? 0 : settings.topNav.height}px"
 	style:--font="'{font.name}'"
 	style:--font-size="{font.size}rem"
@@ -879,7 +997,7 @@
 		main {
 			overflow-y: auto;
 			overflow-x: hidden;
-			max-width: 100vw;
+			max-width: calc(100vw - 400px);
 			max-height: 100vh;
 		}
 	}
@@ -903,68 +1021,83 @@
 	}
 
 	.menu-trigger {
-		position: fixed;
-		bottom: 1rem;
-		right: 1rem;
-		z-index: 10;
-		background-color: var(--bg);
-		color: currentColor;
-		border-radius: 100%;
-		width: 3.5rem;
-		height: 3.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.35em;
-		box-shadow: var(--shadow-4);
-		cursor: pointer;
-		&:hover {
-			color: black;
-		}
-		@include tablet {
-			right: 2rem;
-		}
+		display: none;
 	}
 	.menu {
 		position: fixed;
-		bottom: 5rem;
-		right: 1rem;
+		top: 0;
+		right: 0;
+		bottom: 0;
 		background-color: var(--bg);
 		z-index: 10;
 		width: 400px;
 		max-width: calc(100vw - 2rem);
-		max-height: 80vh;
-		border-radius: var(--radius-5);
+		border-left: 1px solid var(--outline);
 		box-shadow: var(--shadow-4);
 		padding: 0 2rem 1rem;
 		overflow-y: auto;
 		overflow-x: hidden;
-		@include tablet {
-			right: 2rem;
-		}
 
 		@include scrollbar;
-		&::-webkit-scrollbar-track-piece:start {
-			margin-top: var(--radius-5);
-		}
-		&::-webkit-scrollbar-track-piece:end {
-			margin-bottom: var(--radius-5);
-		}
 		h2 {
 			position: sticky;
 			top: 0;
 			background-color: var(--bg);
 			padding: 2rem 0 1rem;
 			color: var(--text);
+			z-index: 3;
+			margin: 0;
+		}
+		nav.tabs {
+			position: sticky;
+			top: 4.5rem;
+			background-color: var(--bg);
+			z-index: 2;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 0.5rem;
+			padding: 0.5rem 0 1rem;
+			border-bottom: 1px solid var(--outline);
+			margin-bottom: 1rem;
+
+			button {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.5rem;
+				background: transparent;
+				border: 1px solid var(--outline);
+				border-radius: var(--radius-3);
+				color: var(--text);
+				font-size: 0.75rem;
+				cursor: pointer;
+				transition: all 0.2s;
+
+				&:hover {
+					background-color: var(--surface-2);
+					border-color: var(--text-low);
+				}
+
+				&.active {
+					background-color: var(--action);
+					color: var(--action-text);
+					border-color: var(--action);
+				}
+
+				:global(svg) {
+					font-size: 1.25rem;
+				}
+			}
 		}
 		h3 {
 			position: sticky;
-			top: 4rem;
+			top: 10rem;
 			background-color: var(--bg);
 			color: var(--text);
 			padding: 1rem 0;
-			margin-top: 1rem;
 			margin-bottom: -1rem;
+			z-index: 1;
 		}
 		.checkbox {
 			margin: 0 0 0 0.5rem;
@@ -996,6 +1129,7 @@
 		background-color: white;
 		width: 100%;
 		padding: 1rem 0;
+		z-index: 2;
 	}
 	button.export {
 		background-color: var(--action);

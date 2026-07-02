@@ -5,6 +5,7 @@
 		timeframe = {} as Timeframe,
 		startWeekOnSunday = false,
 		display = 'grid' as 'grid' | 'columns' | 'rows',
+		locale = 'en-US',
 	} = $props();
 
 	const weekStart = $derived(
@@ -19,12 +20,12 @@
 			<a
 				class="day"
 				href="#{date.getUTCFullYear()}-{date.getUTCMonth() + 1}-{date.getUTCDate()}">
-				{date.toLocaleString('default', { weekday: 'short', timeZone: 'UTC' })}
-				{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true })}
+				{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
+				{@html formatToString(date.getUTCDate(), { type: 'ordinal', html: true, locale })}
 			</a>
 		{:else}
 			<div class="day">
-				{date.toLocaleString('default', { weekday: 'short', timeZone: 'UTC' })}
+				{date.toLocaleString(locale, { weekday: 'short', timeZone: 'UTC' })}
 			</div>
 		{/if}
 	{/each}

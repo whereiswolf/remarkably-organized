@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type CalendarEvent, type Timeframe, getWeek } from '$lib';
+	import { t } from '$lib/helpers/translations';
 	import Grid from './Grid.svelte';
 
 	let {
@@ -9,6 +10,7 @@
 		showWeekLinks = false,
 		useWeekSinceYear = false,
 		showNotes = true,
+		locale = 'en-US',
 	} = $props();
 </script>
 
@@ -26,11 +28,11 @@
 				{@const week = getWeek(date, startWeekOnSunday)}
 				<a href="#{week.id}" class="week" class:last-week={i === numWeeks - 1}>
 					{#if !useWeekSinceYear && week.year && week.month && week.month !== timeframe.month}
-						{new Date(Date.UTC(week.year, week.month)).toLocaleString('default', {
+						{new Date(Date.UTC(week.year, week.month)).toLocaleString(locale, {
 							month: 'short',
 						})}
 					{/if}
-					Week {useWeekSinceYear ? week.weekSinceYear : week.weekSinceMonth}
+					{t('week', locale)} {useWeekSinceYear ? week.weekSinceYear : week.weekSinceMonth}
 				</a>
 			{/each}
 		{/if}
@@ -52,10 +54,10 @@
 					(6 - timeframe.start.getUTCDay() + 7 + (startWeekOnSunday ? 0 : 1)) % 7}>
 				<div class="date">
 					<small>
-						{new Date(timeframe.start.getTime() + day * 86400000).toLocaleString(
-							'default',
-							{ weekday: 'short', timeZone: 'UTC' },
-						)}
+						{new Date(timeframe.start.getTime() + day * 86400000).toLocaleString(locale, {
+							weekday: 'short',
+							timeZone: 'UTC',
+						})}
 					</small>
 					{day + 1}
 				</div>
@@ -79,7 +81,7 @@
 	</div>
 	{#if showNotes}
 		<div class="notes">
-			<h3>Notes</h3>
+			<h3>{t('notes', locale)}</h3>
 			<Grid display="dotted" />
 		</div>
 	{/if}
@@ -126,7 +128,7 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: start;
-			font-size: 1.05em;
+			font-size: 1.2em;
 			font-weight: var(--font-weight-light);
 			border-left: solid 1px var(--outline);
 			line-height: 1;
@@ -134,7 +136,7 @@
 				border-top: solid 1px var(--outline);
 			}
 			small {
-				font-size: 0.65em;
+				font-size: 0.7em;
 				opacity: 1;
 				color: currentColor;
 				margin: 0.1rem 0.2rem 0 0;

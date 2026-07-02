@@ -127,7 +127,7 @@ export class PlannerSettings {
 	/** Settings for changing the overall design of the planner */
 	readonly design = new (class DesignSettings {
 		aspectRatio = $state(0.75);
-		width = $state(702);
+		width = $state(720);
 		font = $state('Roboto');
 		fontDisplay = $state('Bebas Neue');
 		colorText = $state('#424242');
@@ -146,13 +146,15 @@ export class PlannerSettings {
 		end = $state(this.defaultEnd);
 		today = $state(new Date(new Date().setUTCHours(0, 0, 0, 0)));
 		startWeekOnSunday = $state(false);
+		locale = $state(typeof navigator !== 'undefined' ? navigator.language : 'en-US');
 	})();
 
 	/** Settings for changing the side navigation bar display */
 	readonly sideNav = new (class SideNavSettings {
 		disable = $state(false);
 		showCollectionLinks = $state(true);
-		width = $state(52);
+		width = $state(50);
+		padding = $state(0);
 		leftSide = $state(true);
 		font = $state('Bebas Neue');
 	})();
@@ -339,11 +341,11 @@ export class PlannerSettings {
 					start,
 					end,
 					weekStart: new Date(getFirstDayOfWeek(start, this.date.startWeekOnSunday)),
-					nameShort: start.toLocaleDateString('default', {
+					nameShort: start.toLocaleDateString(this.date.locale, {
 						timeZone: 'UTC',
 						month: 'short',
 					}),
-					nameLong: start.toLocaleDateString('default', {
+					nameLong: start.toLocaleDateString(this.date.locale, {
 						timeZone: 'UTC',
 						month: 'long',
 					}),
@@ -407,12 +409,12 @@ export class PlannerSettings {
 					weekYear: week.year,
 					weekMonth: week.month,
 					weekQuarter: week.quarter,
-					nameShort: start.toLocaleDateString('default', {
+					nameShort: start.toLocaleDateString(this.date.locale, {
 						timeZone: 'UTC',
 						month: 'short',
 						day: 'numeric',
 					}),
-					nameLong: start.toLocaleDateString('default', {
+					nameLong: start.toLocaleDateString(this.date.locale, {
 						timeZone: 'UTC',
 						month: 'long',
 						weekday: 'short',
@@ -502,11 +504,13 @@ export class PlannerSettings {
 				end: this.date.end.getTime(),
 				today: this.date.today.getTime(),
 				startWeekOnSunday: this.date.startWeekOnSunday,
+				locale: this.date.locale,
 			},
 			sideNav: {
 				disable: this.sideNav.disable,
 				showCollectionLinks: this.sideNav.showCollectionLinks,
 				width: this.sideNav.width,
+				padding: this.sideNav.padding,
 				leftSide: this.sideNav.leftSide,
 				font: this.sideNav.font,
 			},
@@ -596,6 +600,7 @@ export class PlannerSettings {
 		if (state?.date?.today !== undefined) this.date.today = new Date(state.date.today);
 		if (state?.date?.startWeekOnSunday !== undefined)
 			this.date.startWeekOnSunday = state.date.startWeekOnSunday;
+		if (state?.date?.locale !== undefined) this.date.locale = state.date.locale;
 
 		// Side Nav Settings
 		if (state?.sideNav?.disable !== undefined)
@@ -603,6 +608,8 @@ export class PlannerSettings {
 		if (state?.sideNav?.showCollectionLinks !== undefined)
 			this.sideNav.showCollectionLinks = state.sideNav.showCollectionLinks;
 		if (state?.sideNav?.width !== undefined) this.sideNav.width = state.sideNav.width;
+		if (state?.sideNav?.padding !== undefined)
+			this.sideNav.padding = state.sideNav.padding;
 		if (state?.sideNav?.leftSide !== undefined)
 			this.sideNav.leftSide = state.sideNav.leftSide;
 		if (state?.sideNav?.font !== undefined) this.sideNav.font = state.sideNav.font;
